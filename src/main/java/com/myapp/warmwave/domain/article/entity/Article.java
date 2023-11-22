@@ -1,0 +1,44 @@
+package com.myapp.warmwave.domain.article.entity;
+
+
+import com.myapp.warmwave.common.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
+
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+@Table(name = "TB_ARTICLE")
+public class Article extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+
+    private String content;
+
+    private Long imageId;
+
+    //기부해요, 기부할래요, 인증할래요
+    private Type articleType;
+
+    //게시글 상태(기본, 진행중, 완료)
+    private Status articleStatus;
+
+    //기부물품 카테고리
+    private ProductCategory prodCategory;
+
+    private String userIp;
+
+    private Long hit;
+
+//    @OneToMany
+//    private List<Image> articleImg;
+//
+//    @OneToOne
+//    private User writer;
+}
