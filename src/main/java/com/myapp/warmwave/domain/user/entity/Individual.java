@@ -8,9 +8,8 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @Builder
-@DiscriminatorValue("Individual")
-public class Individual extends User{
-
+@DiscriminatorValue("individual")
+public class Individual extends User {
     @Id
     @GeneratedValue
     private Long id;

@@ -37,9 +37,10 @@ public class Article extends BaseEntity {
 
     private Long hit;
 
-//    @OneToMany
-//    private List<Image> articleImg;
-//
-//    @OneToOne
-//    private User writer;
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> articleImages = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID")
+    private User user;
 }

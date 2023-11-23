@@ -2,6 +2,7 @@ package com.myapp.warmwave.domain.chat.entity;
 
 
 import com.myapp.warmwave.common.BaseEntity;
+import com.myapp.warmwave.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,11 +17,13 @@ public class ChatMessage extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long chatroomId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="CHATROOM_ID")
+    private ChatRoom chatroom;
 
-    private Long toUserId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="SENDER_ID")
+    private User sender;
 
-    private Long fromUserId;
-
-    private String status;
+    private String message;
 }
