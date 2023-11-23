@@ -1,6 +1,8 @@
 package com.myapp.warmwave.domain.chat.entity;
 
 import com.myapp.warmwave.common.BaseEntity;
+import com.myapp.warmwave.domain.article.entity.Article;
+import com.myapp.warmwave.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,12 +21,22 @@ public class ChatRoom extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long donatorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DONOR_ID")
+    private User donor;
 
-    private Long recipientId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RECIPIENT_ID")
+    private User recipient;
 
-    private long articleId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ARTICLE_ID")
+    private Article article;
 
+    @OneToMany(mappedBy = "chatroom", cascade = CascadeType.PERSIST)
+    private List<ChatMessage> chatMessageList = new ArrayList<>();
+
+    // 채팅 상태
     private String status;
 
     private LocalDateTime deletedAt;

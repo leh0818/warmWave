@@ -26,5 +26,6 @@ public class Image {
     @JoinColumn(name = "ARTICLE_ID")
     private Article article;
 
+    @CreatedDate
     private LocalDateTime createdAt;
 }

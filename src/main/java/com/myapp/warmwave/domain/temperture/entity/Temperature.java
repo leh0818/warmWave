@@ -15,8 +15,5 @@ public class Temperature extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @OneToOne
-//    private User userId;
-
-    private Float celsius;
+    private Double celsius;
 }
