@@ -2,6 +2,7 @@ package com.myapp.warmwave.domain.visitor.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -18,5 +19,6 @@ public class Visitor {
 
     private String userIp;
 
+    @CreatedDate
     private LocalDateTime visitedAt;
 }

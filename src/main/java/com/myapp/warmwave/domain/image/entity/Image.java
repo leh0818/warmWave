@@ -1,7 +1,9 @@
 package com.myapp.warmwave.domain.image.entity;
 
+import com.myapp.warmwave.domain.article.entity.Article;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +21,10 @@ public class Image {
     private String imgName;
 
     private String imgUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ARTICLE_ID")
+    private Article article;
 
     private LocalDateTime createdAt;
 }

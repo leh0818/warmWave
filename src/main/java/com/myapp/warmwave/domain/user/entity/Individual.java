@@ -15,11 +15,5 @@ public class Individual extends User{
     @GeneratedValue
     private Long id;
 
-//    @OneToOne
-//    @JoinColumn(name = "ADDRESS_ID")
-//    private Address address;
-//
-//    @OneToOne
-//    @JoinColumn(name = "IMAGE_ID")
-//    private Image image;
+    private String nickname;
 }

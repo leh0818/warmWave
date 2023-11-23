@@ -2,8 +2,17 @@ package com.myapp.warmwave.domain.user.entity;
 
 import com.myapp.warmwave.common.BaseEntity;
 import com.myapp.warmwave.common.Role;
+import com.myapp.warmwave.domain.address.entity.Address;
+import com.myapp.warmwave.domain.article.entity.Article;
+import com.myapp.warmwave.domain.chat.entity.ChatMessage;
+import com.myapp.warmwave.domain.favorite_inst.entity.FavoriteInst;
+import com.myapp.warmwave.domain.image.entity.Image;
+import com.myapp.warmwave.domain.temperture.entity.Temperature;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,12 +26,31 @@ public abstract class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
+    @Column(unique = true)
     private String email;
 
     private String password;
 
     private Role role;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ADDRESS_ID")
+    private Address address;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROFILE_IMAGE_ID")
+    private Image profileImg;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<Article> articles = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TEMPERATURE_ID")
+    private Temperature temperature;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<ChatMessage> messageList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "individualUser", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<FavoriteInst> favoriteList = new ArrayList<>();
 }

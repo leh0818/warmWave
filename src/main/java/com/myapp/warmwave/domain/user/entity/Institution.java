@@ -14,12 +14,11 @@ public class Institution extends User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private String institutionName;
+
+    @Column(unique = true)
     private String registerNum;
-
-    private String profImg;
-
-//    @OneToOne
-//    private Address addressId;
 
     private Boolean isApprove;
 }

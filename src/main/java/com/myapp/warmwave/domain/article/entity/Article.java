@@ -1,10 +1,13 @@
 package com.myapp.warmwave.domain.article.entity;
 
-
 import com.myapp.warmwave.common.BaseEntity;
+import com.myapp.warmwave.domain.image.entity.Image;
+import com.myapp.warmwave.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,8 +23,6 @@ public class Article extends BaseEntity {
     private String title;
 
     private String content;
-
-    private Long imageId;
 
     //기부해요, 기부할래요, 인증할래요
     private Type articleType;
