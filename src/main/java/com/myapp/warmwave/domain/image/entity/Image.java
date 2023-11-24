@@ -28,4 +28,9 @@ public class Image {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public void update(String imgName, String imgUrl) {
+        this.imgName = imgName;
+        this.imgUrl = imgUrl;
+    }
 }

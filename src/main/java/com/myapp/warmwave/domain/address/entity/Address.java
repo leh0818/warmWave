@@ -27,4 +27,11 @@ public class Address {
     private String details;
 
     private Role userType;
+
+    public void update(String fullAddr, String sdName, String sggName, String details) {
+        this.fullAddr = fullAddr;
+        this.sdName = sdName;
+        this.sggName = sggName;
+        this.details = details;
+    }
 }

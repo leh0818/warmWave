@@ -10,6 +10,7 @@ import com.myapp.warmwave.domain.image.entity.Image;
 import com.myapp.warmwave.domain.temperture.entity.Temperature;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @AllArgsConstructor
+@SuperBuilder
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
 @Table(name = "TB_USER")
@@ -41,16 +43,22 @@ public abstract class User extends BaseEntity {
     @JoinColumn(name = "PROFILE_IMAGE_ID")
     private Image profileImg;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<Article> articles = new ArrayList<>();
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TEMPERATURE_ID")
     private Temperature temperature;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<Article> articles = new ArrayList<>();
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<ChatMessage> messageList = new ArrayList<>();
 
     @OneToMany(mappedBy = "individualUser", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<FavoriteInst> favoriteList = new ArrayList<>();
+
+    public void updateUserInfo(String password, Address address, Image profileImg) {
+        this.password = password;
+        this.address = address;
+        this.profileImg = profileImg;
+    }
 }
