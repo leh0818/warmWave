@@ -42,7 +42,7 @@ public class UserController {
     }
 
     // 기관 단일 조회
-    @GetMapping("/{userId}")
+    @GetMapping("/{userId}/institution")
     public ResponseEntity<ResponseUserDto> findInstitution(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.findInstitution(userId));
     }
