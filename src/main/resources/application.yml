@@ -19,3 +19,9 @@ kakao:
   rest:
     api:
       key: ${KAKAO_REST_API_KEY}
+
+image:
+  upload:
+    path: src/main/upload/article-images
+
+

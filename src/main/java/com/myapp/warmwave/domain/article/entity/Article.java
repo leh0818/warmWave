@@ -1,5 +1,6 @@
 package com.myapp.warmwave.domain.article.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.myapp.warmwave.common.BaseEntity;
 import com.myapp.warmwave.domain.image.entity.Image;
 import com.myapp.warmwave.domain.user.entity.User;
@@ -37,10 +38,24 @@ public class Article extends BaseEntity {
 
     private Long hit;
 
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Image> articleImages = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User user;
+
+    public void setArticleImages(List<Image> articleImages) {
+        if (this.articleImages != null) {
+            this.articleImages.clear();
+        }
+        this.articleImages = articleImages;
+    }
+
+    public void applyPatch(Article article) {
+            this.title = article.getTitle();
+            this.content = article.getContent();
+    }
+
 }
