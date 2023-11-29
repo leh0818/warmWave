@@ -6,6 +6,8 @@ import com.myapp.warmwave.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,4 +28,6 @@ public class ChatMessage extends BaseEntity {
     private User sender;
 
     private String message;
+
+    private Date timestamp;
 }
