@@ -20,6 +20,8 @@ public class ResponseUserDto {
 
     private Float temperature;
 
+    private Boolean isApproved;
+
     private int articleCount;
 
     private int favoriteCount;
@@ -30,6 +32,7 @@ public class ResponseUserDto {
                 .name(institution.getInstitutionName())
                 .email(institution.getEmail())
                 .role(institution.getRole())
+                .isApproved(institution.getIsApprove())
                 .temperature(institution.getTemperature())
                 .articleCount(institution.getArticles().size())
                 .favoriteCount(institution.getFavoriteList().size())

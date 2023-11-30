@@ -13,7 +13,6 @@ import lombok.experimental.SuperBuilder;
 @ToString
 @DiscriminatorValue("individual")
 public class Individual extends User {
-
     @Column(unique = true)
     private String nickname;
 

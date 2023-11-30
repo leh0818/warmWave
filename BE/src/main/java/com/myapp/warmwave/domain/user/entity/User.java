@@ -37,7 +37,7 @@ public abstract class User extends BaseEntity {
 
     private String profileImg;
 
-    private Float temperature = 0F;
+    private Float temperature;
 
 //    private Boolean emailAuth;  // 이메일 인증 여부(회원가입 후 진행)
 

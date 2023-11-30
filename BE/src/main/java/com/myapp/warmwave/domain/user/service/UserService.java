@@ -32,7 +32,7 @@ public class UserService {
     // 기관 회원가입
     @Transactional
     public Long joinInstitution(RequestInstitutionJoinDto dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) throw new IllegalArgumentException("이미 존재하는 회원");
+        if (Boolean.TRUE.equals(userRepository.existsByEmail(dto.getEmail()))) throw new IllegalArgumentException("이미 존재하는 회원");
 
         Optional<Address> address = addressService.findAddress(dto.getFullAddr());
 
@@ -80,7 +80,8 @@ public class UserService {
     // 기관 단일 조회 -> 승인한 기관만 조회 가능
 
     public ResponseUserDto findInstitution(Long userId) {
-        return userRepository.findByIdAndIsApproveTrue(userId)
+        return userRepository.findById(userId)
+                .map(Institution.class::cast)
                 .map(ResponseUserDto::FromEntity)
                 .orElseThrow(() -> new IllegalArgumentException("에러"));
     }
@@ -114,12 +115,12 @@ public class UserService {
     // 기관 회원 정보 수정
     @Transactional
     public Long updateInfo(RequestInstitutionUpdateDto dto, Long userId) {
-        Address address = addressService.findAddress(dto.getFullAddr())
-                .orElseThrow(() -> new IllegalArgumentException("주소 검색 오류"));
-
         Institution savedInstitution = userRepository.findById(userId)
                 .map(Institution.class::cast)
                 .orElseThrow(() -> new IllegalArgumentException("에러"));
+
+        Address address = addressService.findAddress(savedInstitution.getAddress().getFullAddr())
+                .orElseThrow(() -> new IllegalArgumentException("주소 검색 오류"));
 
         addressService.updateAddress(dto, savedInstitution);
 
