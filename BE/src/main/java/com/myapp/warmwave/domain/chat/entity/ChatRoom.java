@@ -31,7 +31,7 @@ public class ChatRoom extends BaseEntity {
     private Institution recipient;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="ARTICLE_ID")
+    @JoinColumn(name = "ARTICLE_ID")
     private Article article;
 
     @OneToMany(mappedBy = "chatroom", cascade = CascadeType.PERSIST)

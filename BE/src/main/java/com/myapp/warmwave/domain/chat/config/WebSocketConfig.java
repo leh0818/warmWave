@@ -1,4 +1,5 @@
 package com.myapp.warmwave.domain.chat.config;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -17,6 +18,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .withSockJS();
 
     }
+
     //메세지 브로커에 관한 설정
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {

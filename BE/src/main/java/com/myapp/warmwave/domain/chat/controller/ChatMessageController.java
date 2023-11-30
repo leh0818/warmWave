@@ -9,8 +9,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-
 @RestController
 @RequiredArgsConstructor
 public class ChatMessageController {
@@ -23,11 +21,5 @@ public class ChatMessageController {
     public void sendMsg(@Payload ChatMessageDto message) {
         chatMessageService.saveMessage(message);
     }
-
-//    @MessageMapping("/chat")
-//    @SendTo("/topic/messages")
-//    public ChatMessageDto sendMsg(@Payload ChatMessageDto message) {
-//        return chatMessageService.saveMessage(message);
-//    }
 
 }

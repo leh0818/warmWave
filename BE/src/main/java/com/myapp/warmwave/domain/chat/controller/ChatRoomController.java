@@ -16,16 +16,19 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomService chatroomService;
+
     @PostMapping("/chatRoom")
-    public ResponseEntity<ResponseChatRoomDto> createRoom(@RequestBody ChatRoomDto requestDto){
+    public ResponseEntity<ResponseChatRoomDto> createRoom(@RequestBody ChatRoomDto requestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(chatroomService.createChatRoom(requestDto));
     }
+
     @GetMapping("/chatRoom")
-    public ResponseEntity<List<ResponseChatRoomDto>> getChatRoomList(){
+    public ResponseEntity<List<ResponseChatRoomDto>> getChatRoomList() {
         return ResponseEntity.status(HttpStatus.OK).body(chatroomService.selectChatRoomList());
     }
+
     @DeleteMapping("/chatRoom/{roomId}")
-    public void deleteRoom(@PathVariable("roomId") Long roomId){
-       chatroomService.deleteChatRoom(roomId);
+    public void deleteRoom(@PathVariable("roomId") Long roomId) {
+        chatroomService.deleteChatRoom(roomId);
     }
 }

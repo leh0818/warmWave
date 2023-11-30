@@ -18,6 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository<User> userRepository;
@@ -28,27 +29,30 @@ public class ChatRoomService {
         Institution recipient = userRepository.findById(requestDto.getRecipientId())
                 .map(Institution.class::cast)
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 존재 하지 않습니다"));
-        System.out.println(recipient.toString());
 
         Individual doner = userRepository.findById(requestDto.getDonerId())
                 .map(Individual.class::cast)
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 존재 하지 않습니다"));
-        System.out.println(doner.toString());
+
         Article article = articleRepository.findById(requestDto.getArticleId()).orElseThrow();
-        System.out.println(article.toString());
 
         ChatRoom chatRoom = ChatRoom.builder().donor(doner).recipient(recipient).article(article).build();
+
         return ResponseChatRoomDto.fromEntity(chatRoomRepository.save(chatRoom));
     }
 
     public List<ResponseChatRoomDto> selectChatRoomList() {
         return chatRoomRepository.findAll()
                 .stream()
-                .map(ResponseChatRoomDto::fromEntity).toList();
+                .map(ResponseChatRoomDto::fromEntity)
+                .toList();
     }
+
     @Transactional
     public void deleteChatRoom(Long roomId) {
-        ChatRoom chatRoom=chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다"));
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다"));
+
         chatRoomRepository.delete(chatRoom);
     }
 }
