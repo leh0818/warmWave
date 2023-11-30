@@ -1,6 +1,7 @@
 package com.myapp.warmwave.domain.user.dto;
 
 import com.myapp.warmwave.common.Role;
+import com.myapp.warmwave.domain.user.entity.Individual;
 import com.myapp.warmwave.domain.user.entity.Institution;
 import lombok.*;
 
@@ -35,6 +36,18 @@ public class ResponseUserDto {
                 .temperature(institution.getTemperature())
                 .articleCount(institution.getArticles().size())
                 .favoriteCount(institution.getFavoriteList().size())
+                .build();
+    }
+
+    public static ResponseUserDto FromEntity(Individual individual) {
+        return ResponseUserDto.builder()
+                .id(individual.getId())
+                .name(individual.getNickname())
+                .email(individual.getEmail())
+                .role(individual.getRole())
+                .temperature(individual.getTemperature())
+                .articleCount(individual.getArticles().size())
+                .favoriteCount(individual.getFavoriteList().size())
                 .build();
     }
 }

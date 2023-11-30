@@ -3,7 +3,9 @@ package com.myapp.warmwave.domain.address.service;
 import com.myapp.warmwave.common.Role;
 import com.myapp.warmwave.domain.address.entity.Address;
 import com.myapp.warmwave.domain.address.repository.AddressRepository;
+import com.myapp.warmwave.domain.user.dto.RequestIndividualUpdateDto;
 import com.myapp.warmwave.domain.user.dto.RequestInstitutionUpdateDto;
+import com.myapp.warmwave.domain.user.entity.Individual;
 import com.myapp.warmwave.domain.user.entity.Institution;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,10 +36,20 @@ public class AddressService {
         return addressRepository.findByFullAddr(fullAddr);
     }
 
+    @Transactional
     public void updateAddress(RequestInstitutionUpdateDto dto, Institution institution) {
         Address originalAddress = institution.getAddress();
 
         originalAddress.update(dto.getFullAddr(), dto.getSdName(), dto.getSggName(), dto.getDetails());
         addressRepository.save(originalAddress);
+    }
+
+    @Transactional
+    public Address updateIndividualAddress(RequestIndividualUpdateDto dto, Individual individual) {
+        Address originalAddress = individual.getAddress();
+
+        originalAddress.update(dto.getFullAddr(), dto.getSdName(), dto.getSggName(), dto.getDetails());
+
+        return addressRepository.save(originalAddress);
     }
 }

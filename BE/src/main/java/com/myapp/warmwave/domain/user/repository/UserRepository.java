@@ -10,13 +10,12 @@ import java.util.Optional;
 public interface UserRepository<T extends User> extends JpaRepository<T, Long> {
     // 공통
     Boolean existsByEmail(String email);
-
-    // 개인
+    Optional<User> findByEmail(String email);
 
     // 기관
-
     List<Institution> findAllByIsApproveTrue();
+
     List<Institution> findAllByIsApproveFalse();
 
-    Optional<Institution> findByEmail(String email);
+    Optional<Institution> findByIdAndIsApproveTrue(Long userId);
 }

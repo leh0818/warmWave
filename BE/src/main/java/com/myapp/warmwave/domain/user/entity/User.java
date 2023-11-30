@@ -9,6 +9,7 @@ import com.myapp.warmwave.domain.favorite_inst.entity.FavoriteInst;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +32,18 @@ public abstract class User extends BaseEntity {
 
     private String password;
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     private String profileImg;
 
     private Float temperature;
+
+//    private Boolean emailAuth;  // 이메일 인증 여부(회원가입 후 진행)
+
+//    public void emailVerified() {
+//        this.emailAuth = true;
+//    }
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ADDRESS_ID")
@@ -54,5 +62,23 @@ public abstract class User extends BaseEntity {
         this.password = password;
         this.address = address;
 //        this.profileImg = profileImg;
+    }
+
+    public List<SimpleGrantedAuthority> getGrantedAuthorities() {
+        List<SimpleGrantedAuthority> grantedAuthorities = new ArrayList<>();
+
+        if (this.role == Role.INSTITUTION) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(Role.INSTITUTION.getRole()));
+        }
+
+        if (this.role == Role.INDIVIDUAL) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(Role.INDIVIDUAL.getRole()));
+        }
+
+        if (Role.ADMIN.equals(this.role)) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(Role.ADMIN.getRole()));
+        }
+
+        return grantedAuthorities;
     }
 }
