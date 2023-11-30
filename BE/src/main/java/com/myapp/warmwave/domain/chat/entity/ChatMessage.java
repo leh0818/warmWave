@@ -6,6 +6,8 @@ import com.myapp.warmwave.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,12 +20,14 @@ public class ChatMessage extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="CHATROOM_ID")
+    @JoinColumn(name = "CHATROOM_ID")
     private ChatRoom chatroom;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="SENDER_ID")
+    @JoinColumn(name = "SENDER_ID")
     private User sender;
 
     private String message;
+
+    private Date timestamp;
 }

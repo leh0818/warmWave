@@ -2,7 +2,8 @@ package com.myapp.warmwave.domain.chat.entity;
 
 import com.myapp.warmwave.common.BaseEntity;
 import com.myapp.warmwave.domain.article.entity.Article;
-import com.myapp.warmwave.domain.user.entity.User;
+import com.myapp.warmwave.domain.user.entity.Individual;
+import com.myapp.warmwave.domain.user.entity.Institution;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,14 +24,14 @@ public class ChatRoom extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DONOR_ID")
-    private User donor;
+    private Individual donor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RECIPIENT_ID")
-    private User recipient;
+    private Institution recipient;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="ARTICLE_ID")
+    @JoinColumn(name = "ARTICLE_ID")
     private Article article;
 
     @OneToMany(mappedBy = "chatroom", cascade = CascadeType.PERSIST)
