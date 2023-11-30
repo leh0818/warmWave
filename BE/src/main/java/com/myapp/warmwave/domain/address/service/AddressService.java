@@ -34,6 +34,7 @@ public class AddressService {
         return addressRepository.findByFullAddr(fullAddr);
     }
 
+    @Transactional
     public void updateAddress(RequestInstitutionUpdateDto dto, Institution institution) {
         Address originalAddress = institution.getAddress();
 
@@ -41,11 +42,12 @@ public class AddressService {
         addressRepository.save(originalAddress);
     }
 
+    @Transactional
     public Address updateIndividualAddress(RequestIndividualUpdateDto dto, Individual individual) {
         Address originalAddress = individual.getAddress();
 
         originalAddress.update(dto.getFullAddr(), dto.getSdName(), dto.getSggName(), dto.getDetails());
 
-        return originalAddress;
+        return addressRepository.save(originalAddress);
     }
 }
