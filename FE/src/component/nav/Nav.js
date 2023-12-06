@@ -1,6 +1,9 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import {Link, NavLink, Outlet} from "react-router-dom";
+import {useSelector} from "react-redux";
 
 function Nav() {
+    const loginState = useSelector(state => state.loginSlice)
+
     return (
         <div>
             <header className="header-area header-sticky">
@@ -10,16 +13,32 @@ function Nav() {
                             <nav className="main-nav">
                                 {/* ***** Logo Start ***** */}
                                 <Link to="/" className="logo">
-                                    <img src="logo.png" alt="true" />
+                                    <img src="logo.png" alt="true"/>
                                 </Link>
                                 {/* ***** Logo End ***** */}
                                 {/* ***** Menu Start ***** */}
                                 <ul className="nav">
                                     <li><NavLink to="/">Home</NavLink></li>
                                     <li><NavLink to="/donate">Donate</NavLink></li>
-                                    <li><NavLink to="/chat">Chat</NavLink></li>
-                                    {/* 로그인 여부에 따라 회원가입 / 로그인 창으로 변경하기 */}
-                                    <li><NavLink to="/signin">SignIn</NavLink></li>
+                                    {/*{loginState.email ? // 로그인한 사용자만 출력되는 메뉴*/}
+                                    {/*    <>*/}
+                                    {/*        <li><NavLink to="/chat">Chat</NavLink></li>*/}
+                                    {/*        <li><NavLink to="/logout">Logout</NavLink></li>*/}
+                                    {/*    </>*/}
+                                    {/*    :*/}
+                                    {/*    <></>*/}
+                                    {/*}*/}
+                                    {!loginState.email ?
+                                        <>
+                                            <li><NavLink to="/signup">SigUp</NavLink></li>
+                                            <li><NavLink to="/user/login">LogIn</NavLink></li>
+                                        </>
+                                        :
+                                        <>
+                                            <li><NavLink to="/chat">Chat</NavLink></li>
+                                            <li><NavLink to="/logout">Logout</NavLink></li>
+                                        </>
+                                    }
                                 </ul>
                                 <NavLink className="menu-trigger">
                                     <span>Menu</span>
@@ -31,7 +50,7 @@ function Nav() {
                 </div>
             </header>
 
-            <Outlet />
+            <Outlet/>
         </div>
     )
 }
