@@ -7,8 +7,6 @@ import com.myapp.warmwave.domain.article.entity.ProductCategory;
 import com.myapp.warmwave.domain.article.entity.Status;
 import com.myapp.warmwave.domain.article.entity.Type;
 import com.myapp.warmwave.domain.article.repository.ArticleRepository;
-import com.myapp.warmwave.domain.image.entity.Image;
-import com.myapp.warmwave.domain.image.repository.ImageRepository;
 import com.myapp.warmwave.domain.user.entity.Individual;
 import com.myapp.warmwave.domain.user.entity.Institution;
 import com.myapp.warmwave.domain.user.entity.User;
@@ -21,8 +19,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,12 +34,8 @@ public class ArticleRepositoryTest {
     @Autowired
     private UserRepository<User> userRepository;
 
-    @Autowired
-    private ImageRepository imageRepository;
-
     private Individual individual;
     private Institution institution;
-    private final List<Image> imageList = new ArrayList<>();
 
     private Article articleIndividual() {
         return Article.builder()
@@ -56,7 +48,6 @@ public class ArticleRepositoryTest {
                 .prodCategory(ProductCategory.ETC)
                 .hit(0L)
                 .userIp("111.111.111.111")
-                .articleImages(imageList)
                 .build();
     }
 
@@ -71,31 +62,25 @@ public class ArticleRepositoryTest {
                 .prodCategory(ProductCategory.ETC)
                 .hit(0L)
                 .userIp("123.123.123.123")
-                .articleImages(imageList)
+                .build();
+    }
+
+    private Article articleCertificate() {
+        return Article.builder()
+                .id(3L)
+                .user(institution)
+                .title("제목3")
+                .content("내용3")
+                .articleStatus(Status.DEFAULT)
+                .articleType(Type.CERTIFICATION)
+                .prodCategory(ProductCategory.ETC)
+                .hit(0L)
+                .userIp("123.123.123.123")
                 .build();
     }
 
     @BeforeEach
     void setup() {
-        Image image1 = Image.builder()
-                .id(1L)
-                .imgUrl("/images")
-                .imgName("이미지1")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        Image image2 = Image.builder()
-                .id(2L)
-                .imgUrl("/images")
-                .imgName("이미지2")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        imageList.add(image1);
-        imageList.add(image2);
-
-        imageRepository.saveAll(imageList);
-
         individual = userRepository.save(Individual.builder()
                 .id(1L)
                 .email("email1")
@@ -111,6 +96,7 @@ public class ArticleRepositoryTest {
                 .role(Role.INSTITUTION)
                 .isApprove(true)
                 .institutionName("기관1")
+                .registerNum("1234")
                 .emailAuth(true)
                 .build());
     }
@@ -155,14 +141,15 @@ public class ArticleRepositoryTest {
     @Test
     void readAllArticles() {
         // given
-        articleRepository.save(articleIndividual());
         articleRepository.save(articleInstitution());
+        articleRepository.save(articleCertificate());
+        articleRepository.save(articleIndividual());
 
         // when
         List<Article> articleList = articleRepository.findAll();
 
         // then
-        assertThat(articleList).hasSize(2);
+        assertThat(articleList).hasSize(3);
     }
 
     @DisplayName("게시글 단일 조회(기부해요)")
@@ -199,7 +186,7 @@ public class ArticleRepositoryTest {
     @Test
     void readArticleCertification() {
         // given
-        Article article = articleRepository.save(articleInstitution());
+        Article article = articleRepository.save(articleCertificate());
 
         // when
         Optional<Article> foundArticle = articleRepository.findByTitle(article.getTitle());
