@@ -1,4 +1,4 @@
-package com.myapp.warmwave.user.repository;
+package com.myapp.warmwave.domain.address.repository;
 
 import com.myapp.warmwave.common.Role;
 import com.myapp.warmwave.config.JpaConfig;
