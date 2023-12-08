@@ -1,8 +1,17 @@
 import {Link, NavLink, Outlet} from "react-router-dom";
-import {useSelector} from "react-redux";
+import {useSelector, useDispatch} from "react-redux";
+import { logout } from "../slices/loginSlice"
 
 function Nav() {
-    const loginState = useSelector(state => state.loginSlice)
+    const loginState = useSelector(state => state.loginSlice);
+    console.log( loginState );
+    const dispatch = useDispatch();
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        dispatch(logout());
+        alert("로그아웃되었습니다.");
+    };
 
     return (
         <div>
@@ -20,15 +29,7 @@ function Nav() {
                                 <ul className="nav">
                                     <li><NavLink to="/">Home</NavLink></li>
                                     <li><NavLink to="/donate">Donate</NavLink></li>
-                                    {/*{loginState.email ? // 로그인한 사용자만 출력되는 메뉴*/}
-                                    {/*    <>*/}
-                                    {/*        <li><NavLink to="/chat">Chat</NavLink></li>*/}
-                                    {/*        <li><NavLink to="/logout">Logout</NavLink></li>*/}
-                                    {/*    </>*/}
-                                    {/*    :*/}
-                                    {/*    <></>*/}
-                                    {/*}*/}
-                                    {!loginState.email ?
+                                    {!loginState.id ?
                                         <>
                                             <li><NavLink to="/signup">SigUp</NavLink></li>
                                             <li><NavLink to="/user/login">LogIn</NavLink></li>
@@ -36,7 +37,7 @@ function Nav() {
                                         :
                                         <>
                                             <li><NavLink to="/chat">Chat</NavLink></li>
-                                            <li><NavLink to="/logout">Logout</NavLink></li>
+                                            <li><NavLink to="/" onClick={handleLogout}>Logout</NavLink></li>
                                         </>
                                     }
                                 </ul>
