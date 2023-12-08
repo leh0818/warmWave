@@ -1,6 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Preloader from './component/preloader/Preloader';
 import Nav from './component/nav/Nav';
 import Home from './component/main/home/Home';
@@ -17,6 +19,10 @@ import CommunityList from './component/community/list/CommunityList';
 import CommunityDetails from './component/community/detail/CommunityDetails';
 
 function App() {
+
+    const location = useLocation();
+    const loginState = useSelector(state => state.loginSlice);
+
     return (
         <div>
             <Preloader />
@@ -35,8 +41,8 @@ function App() {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/user/login" element={<Login />} />
             </Routes>
-            <Footer />
-            <PostButton />
+            {location.pathname !== '/signup' && location.pathname !== '/user/login' && <Footer />}
+            {loginState.id && <PostButton />}
         </div>
     );
 }
