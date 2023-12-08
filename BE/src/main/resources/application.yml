@@ -49,7 +49,7 @@ kakao:
 image:
   upload:
     path: file:/Users/wook/Desktop/project/donationProject/donationProject/FE/public/images
-#    path: FE/public/images
+#    path: ../FE/public/images
 custom:
   jwt:
     access:
