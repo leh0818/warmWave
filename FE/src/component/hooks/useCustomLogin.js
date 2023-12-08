@@ -20,10 +20,6 @@ const useCustomLogin = () => {
         return action.payload
     }
     
-    const doLogout = () => {    // 로그아웃 함수
-        dispatch(logout())
-    }
-    
     const moveToPath = (path) => {  // 페이지 이동
         navigate({pathname: path}, {replace:true})
     }
@@ -36,7 +32,7 @@ const useCustomLogin = () => {
         return <Navigate replace to = "/user/login"/>
     }
     
-    return {loginState, isLogin, doLogin, doLogout, moveToPath, moveToLogin, moveToLoginReturn}
+    return {loginState, isLogin, doLogin, moveToPath, moveToLogin, moveToLoginReturn}
 }
 
 export default useCustomLogin
