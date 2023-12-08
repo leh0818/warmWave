@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {Link} from "react-router-dom";
 import useCustomLogin from "../hooks/useCustomLogin"
+// import KakaoLogin from "./KakaoLogin"
 // nodejs library that concatenates classes
 import classnames from "classnames";
 
@@ -30,7 +31,7 @@ function Login() {
 
     const [loginParam, setLoginParam] = useState({...initState})
     
-    const {doLogin, moveTopath} = useCustomLogin()
+    const {doLogin, moveToPath} = useCustomLogin()
 
     const handleChange = (e) => {
         loginParam[e.target.name] = e.target.value
@@ -46,7 +47,7 @@ function Login() {
                     alert("이메일과 패스워드를 다시 확인하세요")
                 } else {
                     alert("로그인 성공")
-                    moveTopath("/") // 뒤로 가기 했을 때 로그인 화면을 볼 수 없도록
+                    moveToPath("/") // 뒤로 가기 했을 때 로그인 화면을 볼 수 없도록
                 }
             })
     }
@@ -73,23 +74,7 @@ function Login() {
                                         <div className="text-muted text-center mb-3">
                                             <small>SNS 로그인</small>
                                         </div>
-                                        <div className="btn-wrapper text-center">
-                                            <Button
-                                                className="btn-neutral btn-icon"
-                                                color="default"
-                                                style={{backgroundColor: 'yellow'}}
-                                                href="#pablo"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    window.location.href = "/oauth2/authorization/kakao";
-                                                }}
-                                            >
-                                                    <span className="btn-inner--icon mr-1">
-                                                        <i class="bi bi-kakao"></i>
-                                                    </span>
-                                                <span className="btn-inner--text">Kakao</span>
-                                            </Button>
-                                        </div>
+                                        {/*<KakaoLogin/>*/}
                                     </CardHeader>
                                     <CardBody className="px-lg-5 py-lg-5">
                                         <div className="text-center text-muted mb-4">
