@@ -10,7 +10,6 @@ import ArticleDetails from './component/article/detail/ArticleDetails';
 import User from "./component/user/user";
 import Login from './component/user/login';
 import SignUp from './component/user/signup';
-import Logout from './component/user/logout'
 
 // import User from './component/user/user';
 
@@ -27,8 +26,7 @@ function App() {
                     <Route path="/user" element={<User/>}/>
                 </Route>
                 <Route path="/signup" element={<SignUp/>}/>
-                <Route path="/login" element={<Login/>}/>
-                <Route path="/logout" element={<Logout/>}/>
+                <Route path="/user/login" element={<Login/>}/>
             </Routes>
             <Footer/>
         </div>
