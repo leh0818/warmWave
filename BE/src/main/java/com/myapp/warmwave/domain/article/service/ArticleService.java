@@ -96,6 +96,14 @@ public class ArticleService {
         return articleRepository.save(findArticle);
     }
 
+    @Transactional
+    public void deleteArticle(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_ARTICLE));
+
+        articleRepository.delete(article);
+    }
+
     public Page<MainArticleDto> findTop5OrderByCreatedAt(int num) {
         Pageable pageable = PageRequest.of(num, 5);
         return articleRepository.findTop5OrderByCreatedAtDesc(pageable);
