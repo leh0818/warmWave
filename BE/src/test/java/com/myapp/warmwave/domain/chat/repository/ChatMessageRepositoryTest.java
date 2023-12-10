@@ -3,7 +3,6 @@ package com.myapp.warmwave.domain.chat.repository;
 import com.myapp.warmwave.common.Role;
 import com.myapp.warmwave.config.JpaConfig;
 import com.myapp.warmwave.domain.article.entity.Article;
-import com.myapp.warmwave.domain.article.entity.ProductCategory;
 import com.myapp.warmwave.domain.article.entity.Status;
 import com.myapp.warmwave.domain.article.entity.Type;
 import com.myapp.warmwave.domain.article.repository.ArticleRepository;
@@ -90,7 +89,6 @@ public class ChatMessageRepositoryTest {
                 .content("내용1")
                 .articleStatus(Status.DEFAULT)
                 .articleType(Type.DONATION)
-                .prodCategory(ProductCategory.ETC)
                 .hit(0L)
                 .build());
 
