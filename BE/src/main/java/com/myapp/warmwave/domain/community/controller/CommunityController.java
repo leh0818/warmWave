@@ -75,7 +75,7 @@ public class CommunityController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/images/{communityId}") // 이미지 분리. 삭제는 추후
+    @PostMapping("/{communityId}/images") // 이미지 분리. 삭제는 추후
     public ResponseEntity<CommunityResponseDto> addCommunityImages(@PathVariable("communityId") Long communityId,
                                                @RequestPart List<MultipartFile> images) {
         return new ResponseEntity<>(communityFacadeService.addCommunityImages(communityId, images), HttpStatus.OK);

@@ -1,13 +1,12 @@
 package com.myapp.warmwave.domain.comment.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/comment")
-public class commentController {
+@RequestMapping("/api/comments")
+public class CommentController {
 //    @PostMapping("")
 //    public ResponseEntity
 //
