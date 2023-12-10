@@ -298,7 +298,7 @@ public class UserServiceTest {
         address2.update(updateDto.getFullAddr(), updateDto.getSdName(), updateDto.getSggName(), updateDto.getDetails());
 
         when(userRepository.findById(any())).thenReturn(Optional.of(institution));
-        when(addressService.updateAddress(any(), any())).thenReturn(address2);
+        when(addressService.updateInstitutionAddress(any(), any())).thenReturn(address2);
 
         // when
         Long id = userService.updateInstInfo(updateDto, userId);

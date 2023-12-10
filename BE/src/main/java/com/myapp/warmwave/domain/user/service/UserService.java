@@ -187,7 +187,7 @@ public class UserService {
                 .map(Institution.class::cast)
                 .orElseThrow(() -> new IllegalArgumentException("에러"));
 
-        Address address = addressService.updateAddress(dto, savedInstitution);
+        Address address = addressService.updateInstitutionAddress(dto, savedInstitution);
 
         savedInstitution.updateUserInfo(passwordEncoder.encode(dto.getPassword()), address);
 

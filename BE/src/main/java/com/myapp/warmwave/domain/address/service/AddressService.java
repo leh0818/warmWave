@@ -37,7 +37,7 @@ public class AddressService {
     }
 
     @Transactional
-    public Address updateAddress(RequestInstitutionUpdateDto dto, Institution institution) {
+    public Address updateInstitutionAddress(RequestInstitutionUpdateDto dto, Institution institution) {
         Address originalAddress = institution.getAddress();
 
         originalAddress.update(dto.getFullAddr(), dto.getSdName(), dto.getSggName(), dto.getDetails());
