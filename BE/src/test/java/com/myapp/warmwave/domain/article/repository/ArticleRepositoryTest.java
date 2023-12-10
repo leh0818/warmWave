@@ -6,7 +6,6 @@ import com.myapp.warmwave.domain.article.entity.Article;
 import com.myapp.warmwave.domain.article.entity.ProductCategory;
 import com.myapp.warmwave.domain.article.entity.Status;
 import com.myapp.warmwave.domain.article.entity.Type;
-import com.myapp.warmwave.domain.article.repository.ArticleRepository;
 import com.myapp.warmwave.domain.user.entity.Individual;
 import com.myapp.warmwave.domain.user.entity.Institution;
 import com.myapp.warmwave.domain.user.entity.User;
@@ -22,7 +21,7 @@ import org.springframework.context.annotation.Import;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import(JpaConfig.class)
@@ -97,7 +96,6 @@ public class ArticleRepositoryTest {
                 .isApprove(true)
                 .institutionName("기관1")
                 .registerNum("1234")
-                .emailAuth(true)
                 .build());
     }
 

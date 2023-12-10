@@ -9,8 +9,6 @@ import com.myapp.warmwave.domain.article.entity.Type;
 import com.myapp.warmwave.domain.article.repository.ArticleRepository;
 import com.myapp.warmwave.domain.chat.entity.ChatMessage;
 import com.myapp.warmwave.domain.chat.entity.ChatRoom;
-import com.myapp.warmwave.domain.chat.repository.ChatMessageRepository;
-import com.myapp.warmwave.domain.chat.repository.ChatRoomRepository;
 import com.myapp.warmwave.domain.user.entity.Individual;
 import com.myapp.warmwave.domain.user.entity.Institution;
 import com.myapp.warmwave.domain.user.entity.User;
@@ -83,7 +81,6 @@ public class ChatMessageRepositoryTest {
                 .role(Role.INSTITUTION)
                 .isApprove(true)
                 .institutionName("기관1")
-                .emailAuth(true)
                 .build());
 
         article = articleRepository.save(Article.builder()

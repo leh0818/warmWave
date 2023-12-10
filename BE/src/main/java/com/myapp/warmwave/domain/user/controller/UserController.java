@@ -100,7 +100,7 @@ public class UserController {
             @PathVariable("userId") Long userId,
             @RequestBody RequestInstitutionUpdateDto dto
     ) {
-        return ResponseEntity.ok(userService.updateInfo(dto, userId));
+        return ResponseEntity.ok(userService.updateInstInfo(dto, userId));
     }
 
     // 개인 회원 정보 수정
