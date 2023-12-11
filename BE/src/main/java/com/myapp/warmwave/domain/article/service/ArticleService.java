@@ -23,9 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
+import static com.myapp.warmwave.common.exception.CustomExceptionCode.FAILED_TO_REMOVAL;
 import static com.myapp.warmwave.common.exception.CustomExceptionCode.NOT_FOUND_ARTICLE;
 
 @Slf4j
@@ -61,6 +61,27 @@ public class ArticleService {
         return savedArticle;
     }
 
+    @Transactional
+    public Article updateArticle(Long articleId, ArticlePostDto dto, List<MultipartFile> imageFiles) throws IOException {
+
+        Article findArticle = articleRepository.findById(articleId).orElseThrow(() -> new CustomException(NOT_FOUND_ARTICLE));
+        imageService.deleteImagesByArticleId(findArticle.getId());
+        articleCategoryRepository.deleteByArticleId(findArticle.getId());
+
+        List<Category> categories = categoryService.getCategory(dto.getProdCategory());
+
+        for (Category category : categories) {
+            ArticleCategory articleCategory = ArticleCategory.OfArticleCategory(findArticle, category);
+            articleCategoryRepository.save(articleCategory);
+        }
+
+        //추후 세터를 삭제하는 방향을 생각해보아야함
+        findArticle.applyPatch(dto, articleCategoryRepository.findByArticleId(findArticle.getId()));
+        findArticle.setArticleImages(imageService.uploadImages(findArticle, imageFiles));
+
+        return articleRepository.save(findArticle);
+    }
+
     public Article getArticleByArticleId(Long articleId) {
         return articleRepository.findById(articleId).orElseThrow(() -> new CustomException(NOT_FOUND_ARTICLE));
     }
@@ -79,30 +100,17 @@ public class ArticleService {
     }
 
     @Transactional
-    public Article updateArticle(Long articleId, ArticlePostDto dto, List<MultipartFile> imageFiles) throws IOException {
+    public void deleteArticle(long articleId) {
+        imageService.deleteImagesByArticleId(articleId);
+        articleCategoryRepository.deleteByArticleId(articleId);
+        articleRepository.deleteById(articleId);
 
-        List<Category> categories = categoryService.getCategory(dto.getProdCategory());
-        List<ArticleCategory> articleCategories = new ArrayList<>();
-        Article findArticle = articleRepository.findById(articleId).orElseThrow(() -> new CustomException(NOT_FOUND_ARTICLE));
-
-        for (Category category : categories) {
-            articleCategories.add(ArticleCategory.OfArticleCategory(findArticle, category));
+        if(articleRepository.existsById(articleId)) {
+            new CustomException(FAILED_TO_REMOVAL);
         }
-        //추후 세터를 삭제하는 방향을 생각해보아야함
-
-        findArticle.applyPatch(dto, articleCategories);
-        findArticle.setArticleImages(imageService.uploadImages(findArticle, imageFiles));
-
-        return articleRepository.save(findArticle);
     }
 
-    @Transactional
-    public void deleteArticle(Long articleId) {
-        Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new CustomException(NOT_FOUND_ARTICLE));
 
-        articleRepository.delete(article);
-    }
 
     public Page<MainArticleDto> findTop5OrderByCreatedAt(int num) {
         Pageable pageable = PageRequest.of(num, 5);

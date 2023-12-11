@@ -30,8 +30,6 @@ private String imageStorePath;
 
     private final ImageRepository imageRepository;
 
-    // individual, article, user, 일반 -> 폴더명
-    // article id를 filename
     public List<Image> uploadImages(Article article, List<MultipartFile> imageFiles) throws IOException {
         List<Image> images = new ArrayList<>();
 
@@ -109,5 +107,20 @@ private String imageStorePath;
             }
         }
         return images;
+    }
+
+    public void deleteImagesByArticleId(Long articleId) {
+        List<Image> imagesToDelete = imageRepository.findByArticleId(articleId);
+
+        for (Image image : imagesToDelete) {
+            String fileName = image.getImgName();
+            File fileToDelete = new File(imageStorePath, fileName);
+
+            // 파일 삭제
+            if (fileToDelete.exists()) {
+                fileToDelete.delete();
+            }
+        }
+        imageRepository.deleteAll(imagesToDelete);
     }
 }
