@@ -1,8 +1,94 @@
+import React from "react";
 import {useState, useEffect} from "react";
 import {Link} from "react-router-dom";
 import KakaoPost from "./kakaopost/KakaoPost"
 
 function SignUp() {
+
+    // 초기값 세팅 - 이메일, 닉네임, 비밀번호
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const [nickname, setNickname] = React.useState("");
+
+    // 오류메세지 상태 저장
+    const [emailMessage, setEmailMessage] = React.useState("");
+    const [passwordMessage, setPasswordMessage] = React.useState("");
+    const [nicknameMessage, setNicknameMessage] = React.useState("");
+
+    // 유효성 검사
+    const [isEmail, setIsEmail] = React.useState(false);
+    const [isPassword, setIsPassword] = React.useState(false);
+    const [isNickname, setIsNickname] = React.useState(false);
+
+    const onChangeEmail = (e) => {
+        const currentEmail = e.target.value;
+        setEmail(currentEmail);
+        const emailRegExp =
+            /^[A-Za-z0-9_]+[A-Za-z0-9]*[@]{1}[A-Za-z0-9]+[A-Za-z0-9]*[.]{1}[A-Za-z]{1,3}$/;
+
+        if (!emailRegExp.test(currentEmail)) {
+            setEmailMessage("이메일의 형식이 올바르지 않습니다!");
+            setIsEmail(false);
+        } else {
+            setEmailMessage("사용 가능한 이메일 입니다.");
+            setIsEmail(true);
+        }
+    };
+
+    const onChangePassword = (e) => {
+        const currentPassword = e.target.value;
+        setPassword(currentPassword);
+        const passwordRegExp =
+            /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
+        if (!passwordRegExp.test(currentPassword)) {
+            setPasswordMessage(
+                "숫자+영문자 조합으로 8자리 이상 입력해주세요!"
+            );
+            setIsPassword(false);
+        } else {
+            setPasswordMessage("안전한 비밀번호 입니다.");
+            setIsPassword(true);
+        }
+    };
+
+    const onChangeNickname = (e) => {
+        const currentNickname = e.target.value;
+        setNickname(currentNickname);
+        const nicknameRegExp = /^[가-힣]{2,12}$/;
+
+        if (!nicknameRegExp.test(currentNickname)) {
+            setNicknameMessage("닉네임은 한글로 2글자 이상 12글자 이하로 입력해주세요!");
+            setIsNickname(false);
+        } else {
+            setNicknameMessage("사용 가능한 닉네임 입니다.");
+            setIsNickname(true);
+        }
+    };
+
+    // const checkEmailDuplication = async () => {
+    //     // 이메일 중복 확인 요청을 보내는 API endpoint.
+    //     const url = "/api/checkEmailDuplication";
+    //
+    //     try {
+    //         const response = await fetch(url, {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({ email: currentEmail })
+    //         });
+    //
+    //         const data = await response.json();
+    //
+    //         if (data.isDuplicated) {
+    //             setEmailMessage("이미 사용중인 이메일입니다.");
+    //             setIsEmail(false);
+    //         } else {
+    //             setEmailMessage("사용 가능한 이메일입니다.");
+    //             setIsEmail(true);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error:", error);
+    //     }
+    // };
 
     const [isKakaoPostOpen, setKakaoPostOpen] = useState(false);
     const [addressObj, setAddressObj] = useState({});
@@ -60,7 +146,9 @@ function SignUp() {
                                                    required
                                                    placeholder="@warmwave.kr 형식으로 입력해주세요"
                                                    name="email"
+                                                   onChange={onChangeEmail}
                                             />
+                                            <p className="message">{emailMessage}</p>
                                         </div>
                                         <div className="form-outline mb-4">
                                             <label className="form-label" htmlFor="form3Example4cg">비밀번호</label>
@@ -68,14 +156,20 @@ function SignUp() {
                                                    className="form-control form-control-lg placeholder-gray-500/80"
                                                    autoComplete="current-password"
                                                    required=""
-                                                   placeholder="영문,숫자를 포함한 8~16자로 입력해주세요" name="password"/>
+                                                   placeholder="영문,숫자를 포함한 8~16자로 입력해주세요" name="password"
+                                                   onChange={onChangePassword}
+                                            />
+                                            <p className="message">{passwordMessage}</p>
                                         </div>
                                         <div className="form-outline mb-4">
                                             <label className="form-label" htmlFor="formNickName">닉네임</label>
                                             <input id="nickname" type="text"
                                                    className="form-control form-control-lg placeholder-gray-500/80"
                                                    required=""
-                                                   placeholder="한글 2~20자로 입력해주세요" name="nickname"/>
+                                                   placeholder="한글 2~20자로 입력해주세요" name="nickname"
+                                                   onChange={onChangeNickname}
+                                            />
+                                            <p className="message">{nicknameMessage}</p>
                                         </div>
                                         <div className="form-outline mb-4">
                                             <div style={{display: 'flex', justifyContent: 'space-between'}}>
