@@ -29,6 +29,7 @@ function Nav() {
                                 <ul className="nav">
                                     <li><NavLink to="/">Home</NavLink></li>
                                     <li><NavLink to="/donate">Donate</NavLink></li>
+                                    <li><NavLink to="/community">Community</NavLink></li>
                                     {!loginState.id ?
                                         <>
                                             <li><NavLink to="/signup">SigUp</NavLink></li>

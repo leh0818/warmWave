@@ -34,6 +34,7 @@ public enum CustomExceptionCode {
     NOT_FOUND_ROADMAP_ELEMENT(HttpStatus.NOT_FOUND, "해당 로드 요소를 찾을 수 없습니다."),
     ALREADY_DELETED_ELEMENT(HttpStatus.NOT_FOUND, "이미 삭제된 요소입니다."),
     NOT_FOUND_ARTICLE(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "해당 댓글을 찾을 수 없습니다."),
     NOT_FOUND_LIKE(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     ALREADY_EXIST_USER(HttpStatus.CONFLICT, "이미 존재하는 아이디입니다."),
     ALREADY_EXIST_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
@@ -53,7 +54,7 @@ public enum CustomExceptionCode {
      * 500
      */
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 문제가 발생했습니다."),
-    FAILED_TO_REMOVAL(HttpStatus.INTERNAL_SERVER_ERROR, "삭제에 실패했습니다.");
+    FAILED_TO_REMOVE(HttpStatus.INTERNAL_SERVER_ERROR, "삭제에 실패했습니다.");
     private final HttpStatus httpStatus;
     private final String message;
 }
