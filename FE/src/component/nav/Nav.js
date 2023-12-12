@@ -22,7 +22,7 @@ function Nav() {
                             <nav className="main-nav">
                                 {/* ***** Logo Start ***** */}
                                 <Link to="/" className="logo">
-                                    <img src="logo.png" alt="true"/>
+                                    <img src="logo.png" style={{width:"110px"}} alt="true"/>
                                 </Link>
                                 {/* ***** Logo End ***** */}
                                 {/* ***** Menu Start ***** */}
