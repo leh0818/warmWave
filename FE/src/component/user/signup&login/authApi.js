@@ -27,7 +27,7 @@ const useAuthAPI = () => {
 
     const SignUp = async (auth) => {
         try {
-            const response = await instance.post(`${host}/api/users/signup`, auth);
+            const response = await instance.post(`${host}/api/users/register/individual`, auth);
             return response;
         } catch (error) {
             showToast('에러가 발생했습니다');
@@ -36,7 +36,7 @@ const useAuthAPI = () => {
 
     const emailValidCheck = async (email) => {
         try {
-            const response = await instance.get(`${host}/api/users/signup/checkEmail/?email=${email}`);
+            const response = await instance.get(`${host}/api/users/register/checkEmail/?email=${email}`);
             return response;
         } catch (error) {
             showToast('에러가 발생했습니다');
