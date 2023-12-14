@@ -50,13 +50,17 @@ public class UserService {
     public static final String DEFAULT_PROFILE_IMG_INST = "/static/profile/default_inst.jpg";
     public static final String DEFAULT_PROFILE_IMG_INDI = "/static/profile/default_indi.jpg";
 
+    // 이메일 중복여부 확인
+    @Transactional
+    public boolean checkUserDuplicate(String email) {
+        boolean duplicateEmail = userRepository.existsByEmail(email);
+        return !duplicateEmail; // userEmail이 중복이면 true, 중복이 아닌 경우 false
+    }
     // 기관 회원가입
     @Transactional
     public ResponseUserJoinDto joinInstitution(RequestInstitutionJoinDto dto) {
 
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new CustomException(ALREADY_EXIST_USER);
-        }
+        checkUserDuplicate(dto.getEmail());
 
         Optional<Address> address = addressService.findAddress(dto.getFullAddr());
 
@@ -81,9 +85,8 @@ public class UserService {
     // 개인 회원가입
     @Transactional
     public ResponseUserJoinDto joinIndividual(RequestIndividualJoinDto dto) {
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new CustomException(ALREADY_EXIST_USER);
-        }
+
+        checkUserDuplicate(dto.getEmail());
 
         EmailAuth emailAuth = emailService.createEmailAuth(dto.getEmail());
 
@@ -105,7 +108,9 @@ public class UserService {
     // 이메일 인증 성공
     @Transactional
     public void confirmEmail(RequestEmailAuthDto requestDto) {
-        EmailAuth emailAuth = emailService.validEmail(requestDto.getEmail(), requestDto.getAuthToken(), LocalDateTime.now());
+        EmailAuth emailAuth = emailAuthRepository
+                .findValidAuthByEmail(requestDto.getEmail(), requestDto.getAuthToken(), LocalDateTime.now())
+                .orElseThrow(() -> new CustomException(NEED_EMAIL_AUTHENTICATION));
 
         User user = userRepository
                 .findByEmail(requestDto.getEmail())
