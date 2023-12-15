@@ -25,9 +25,18 @@ const useAuthAPI = () => {
         }
     };
 
-    const SignUp = async (auth) => {
+    const SignUpIndividual = async (auth) => {
         try {
             const response = await instance.post(`${host}/api/users/register/individual`, auth);
+            return response;
+        } catch (error) {
+            showToast('에러가 발생했습니다');
+        }
+    };
+
+    const SignUpInstitution = async (auth) => {
+        try {
+            const response = await instance.post(`${host}/api/users/register/institution`, auth);
             return response;
         } catch (error) {
             showToast('에러가 발생했습니다');
@@ -45,8 +54,8 @@ const useAuthAPI = () => {
 
     return {
         Login,
-        SignUp,
-        emailValidCheck,
+        SignUpIndividual,
+        emailValidCheck
     };
 };
 
