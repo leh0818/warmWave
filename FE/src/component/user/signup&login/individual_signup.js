@@ -2,13 +2,13 @@ import React, {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import useDidMountEffect from '../../hooks/useDidMountEffect';
 import styled from 'styled-components';
-import Logo from './logo.png'
+import Logo from './logo.png';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import useAuthAPI from './authApi';
 import useToast from '../../hooks/useToast';
-import DaumPost from '../daumPost'
+import DaumPost from '../daumPost';
 
 const schema = yup.object().shape({
     email: yup

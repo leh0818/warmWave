@@ -1,6 +1,6 @@
 import {Link, NavLink, Outlet} from "react-router-dom";
 import {useSelector, useDispatch} from "react-redux";
-import { logout } from "../slices/loginSlice"
+import { logout } from "../slices/loginSlice";
 import useToast from '../hooks/useToast';
 
 function Nav() {
