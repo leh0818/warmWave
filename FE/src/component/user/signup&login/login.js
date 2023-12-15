@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {Link} from "react-router-dom";
 import useCustomLogin from "../../hooks/useCustomLogin"
 // import KakaoLogin from "./KakaoLogin"
-import useToast from '../../hooks/useToast';
+import useToast from "../../hooks/useToast";
 // nodejs library that concatenates classes
 import classnames from "classnames";
 
