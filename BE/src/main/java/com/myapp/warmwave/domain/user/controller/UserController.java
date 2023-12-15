@@ -24,7 +24,7 @@ public class UserController {
     private final UserService userService;
 
     // 이메일 중복여부 확인
-    @GetMapping("/signup/checkEmail/")
+    @GetMapping("/signup/checkEmail")
     public ResponseEntity<Boolean> checkUserDuplicate (@RequestParam String email){
 
         return ResponseEntity.ok(userService.checkUserDuplicate(email));
