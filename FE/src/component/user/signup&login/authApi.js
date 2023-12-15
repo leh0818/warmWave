@@ -9,7 +9,7 @@ const instance = axios.create({
     baseURL: host,
     withCredentials: true,
     headers: {
-        'Access-Control-Allow-Origin': '*',
+        "Access-Control-Allow-Origin": "*",
     },
 });
 
@@ -45,7 +45,7 @@ const useAuthAPI = () => {
 
     const emailValidCheck = async (email) => {
         try {
-            const response = await instance.get(`${host}/api/users/register/checkEmail/?email=${email}`);
+            const response = await instance.get(`${host}/api/users/register/checkEmail?email=${email}`);
             return response;
         } catch (error) {
             showToast('에러가 발생했습니다');

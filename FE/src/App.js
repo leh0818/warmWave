@@ -55,7 +55,7 @@ function App() {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/user/login" element={<Login />} />
             </Routes>
-            {location.pathname !== '/signup/individual' && location.pathname !== '/signup/institution' && location.pathname !== '/user/login' && <Footer />}
+            {location.pathname !== '/signup/individual' && location.pathname !== '/signup/institution' && location.pathname !== '/user/login'  &&<Footer />}
             {loginState.id && <PostButton />}
         </div>
     );
