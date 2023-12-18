@@ -1,17 +1,40 @@
-import { Link } from "react-router-dom";
 import './mypage.css';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import MyInfo from "./myInfo";
 import MyArticleList from "./myArticleList";
 import FavoriteInstList from "./favoriteInstList";
 import MyChatRoom from "./myChatRoom";
-import EditMyInfo from "./editIndivInfo";
+import { getCookie } from '../../util/cookieUtil';
+import jwtAxios from '../../util/jwtUtil';
+export const API_SERVER_HOST = 'http://localhost:8080'
 
 function MyPage() {
   const [currentPage, setCurrentPage] = useState('myInfo');
-  //TODO: 현재 로그인한 user type 가져와서 주입해야 함
-  const [userType, setUserType] = useState('individual');
+  const [userType, setUserType] = useState();
+  const [userInfo, setUserInfo] = useState();
+  const userId = getCookie('user').id;
+
+  useEffect(() => {
+    jwtAxios.get(`${API_SERVER_HOST}/api/users/${userId}`)
+      .then(response => {
+        const responseData = response.data;
+        const currentUserType = responseData.role.toLowerCase();
+        setUserType(currentUserType);
+        if (userType !== null) {
+          setUserInfo({
+            userId: userId,
+            userType: currentUserType,
+            name: responseData.name,
+            email: responseData.email,
+            address: responseData.fullAddr
+          });
+        }
+      });
+  }, [userId]);
+
+  if (!userInfo) {
+    return <div>Loading...</div>
+  }
 
   const changeSelectedItem = (e, selectedItem) => {
     const siblings = getSiblings(e.target);
@@ -54,17 +77,15 @@ function MyPage() {
   const renderPage = () => {
     switch (currentPage) {
       case 'myInfo':
-        return <MyInfo userType={userType} />
+        return <MyInfo userType={userType} userInfo={userInfo} />
       case 'myArticleList':
         return <MyArticleList />;
       case 'favoriteInstList':
         return <FavoriteInstList />;
       case 'myChatRoom':
         return <MyChatRoom />
-      case 'editMyInfo':
-        return <EditMyInfo />
       default:
-        return <MyInfo />
+        return <div>Loading...</div>
     }
   };
 
@@ -77,12 +98,9 @@ function MyPage() {
               <div className="card-body">
                 <div className="d-flex flex-column align-items-center text-center">
                   <div className="mt-3">
-                    <h4>사용자 닉네임</h4>
+                    <h4>{userInfo.name}</h4>
                     <p className="text-secondary mb-1">기타 사용자 설명</p>
-                    <p className="text-muted font-size-sm">사용자 주소</p>
-                    {/* 테스트용 버튼입니다.  */}
-                    <button className="btn btn-primary m-1" onClick={() => { setUserType('individual'); }}>개인</button>
-                    <button className="btn btn-primary" onClick={() => { setUserType('institution'); }}>기관</button>
+                    <p className="text-muted font-size-sm">{userInfo.address}</p>
                   </div>
                 </div>
               </div>
@@ -99,7 +117,7 @@ function MyPage() {
                   <span onClick={(e) => { e.stopPropagation(); }}>내 채팅방 조회</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-center align-items-center flex-wrap" onClick={e => { changeSelectedItem(e, 'favoriteInstList') }}>
-                  <sapn onClick={(e) => { e.stopPropagation(); }}>즐겨찾기 기관 목록 조회</sapn>
+                  <span onClick={(e) => { e.stopPropagation(); }}>즐겨찾기 기관 목록 조회</span>
                 </li>
               </ul>
             </div>
