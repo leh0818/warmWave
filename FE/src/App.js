@@ -15,6 +15,7 @@ import User from "./component/user/user";
 import Login from './component/user/signup&login/login';
 import PostButton from './component/article/post/PostButton';
 import PostForm from './component/article/post/PostForm';
+import Signup from './component/user/signup&login/signup'
 import Individual_signup from './component/user/signup&login/individual_signup';
 import Institution_signup from './component/user/signup&login/institution_signup'
 import MyPage from './component/user/mypage/mypage';
@@ -44,6 +45,7 @@ function App() {
                     <Route path='/user/me' element={<MyPage />} />
                     <Route path="/community" element={<CommunityList />} />
                     <Route path="/community/:communityId" element={<CommunityDetails />} />
+                    <Route path="/signup" element={<Signup />} />
                 </Route>
                 <Route path="/signup/individual" element={<Individual_signup />} />
                 <Route path="/signup/institution" element={<Institution_signup />} />
