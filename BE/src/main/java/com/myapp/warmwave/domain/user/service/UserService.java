@@ -119,9 +119,7 @@ public class UserService {
     // 이메일 인증 성공
     @Transactional
     public void confirmEmail(RequestEmailAuthDto requestDto) {
-        EmailAuth emailAuth = emailAuthRepository
-                .findValidAuthByEmail(requestDto.getEmail(), requestDto.getAuthToken(), LocalDateTime.now())
-                .orElseThrow(() -> new CustomException(NEED_EMAIL_AUTHENTICATION));
+        EmailAuth emailAuth = emailService.validEmail(requestDto.getEmail(), requestDto.getAuthToken(), LocalDateTime.now());
 
         User user = userRepository
                 .findByEmail(requestDto.getEmail())
@@ -141,7 +139,7 @@ public class UserService {
             throw new CustomException(PASSWORD_NOT_MATCH);
 
         if (Boolean.FALSE.equals(user.getEmailAuth().getIsVerified()))
-            throw new CustomException(EXPIRED_JWT);
+            throw new CustomException(NEED_EMAIL_AUTHENTICATION);
 
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtProvider.EMAIL_CLAIM, user.getEmail());
