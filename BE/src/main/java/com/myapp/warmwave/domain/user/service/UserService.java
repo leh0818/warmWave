@@ -312,11 +312,4 @@ public class UserService {
                 .email(email)
                 .build();
     }
-
-    @Cacheable(value = "users", key = "#id", cacheManager = "userCacheManager")
-    public CacheUserDto findUserCacheDtoById(Long id) {
-        return userRepository.findById(id)
-                .map(user -> new CacheUserDto(user.getId(), user.getName()))
-                .orElseThrow(() -> new CustomException(NOT_FOUND_USER));
-    }
 }

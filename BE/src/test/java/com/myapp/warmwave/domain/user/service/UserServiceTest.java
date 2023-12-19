@@ -2,6 +2,7 @@ package com.myapp.warmwave.domain.user.service;
 
 import com.myapp.warmwave.common.Role;
 import com.myapp.warmwave.common.jwt.JwtProvider;
+import com.myapp.warmwave.config.security.CookieManager;
 import com.myapp.warmwave.domain.address.entity.Address;
 import com.myapp.warmwave.domain.address.service.AddressService;
 import com.myapp.warmwave.domain.email.dto.RequestEmailAuthDto;
@@ -13,6 +14,7 @@ import com.myapp.warmwave.domain.user.entity.Institution;
 import com.myapp.warmwave.domain.user.entity.User;
 import com.myapp.warmwave.domain.user.repository.IndividualRepository;
 import com.myapp.warmwave.domain.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
@@ -50,6 +53,9 @@ public class UserServiceTest {
 
     @Mock
     private JwtProvider jwtProvider;
+
+    @Mock
+    private CookieManager cookieManager;
 
     @InjectMocks
     private UserService userService;
@@ -196,6 +202,7 @@ public class UserServiceTest {
     @Test
     void login() {
         // given
+        HttpServletResponse response = new MockHttpServletResponse();
         RequestUserLoginDto reqDto = new RequestUserLoginDto("test@gmail.com", "1234");
         individual.getEmailAuth().emailVerified();
 
@@ -206,13 +213,11 @@ public class UserServiceTest {
         when(jwtProvider.createRefreshToken()).thenReturn("987654321");
 
         // when
-        ResponseUserLoginDto resDto = userService.loginUser(reqDto);
+        ResponseUserLoginDto resDto = userService.loginUser(response, reqDto);
 
         // then
         assertThat(resDto).isNotNull();
         assertThat(resDto.getId()).isEqualTo(1L);
-        assertThat(resDto.getAccessToken()).isEqualTo("123456789");
-        assertThat(resDto.getRefreshToken()).isEqualTo("987654321");
     }
 
     @DisplayName("개인 목록 조회 기능 확인")
