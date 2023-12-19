@@ -14,6 +14,7 @@ import com.myapp.warmwave.domain.user.dto.*;
 import com.myapp.warmwave.domain.user.entity.Individual;
 import com.myapp.warmwave.domain.user.entity.Institution;
 import com.myapp.warmwave.domain.user.entity.User;
+import com.myapp.warmwave.domain.user.repository.IndividualRepository;
 import com.myapp.warmwave.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ import static com.myapp.warmwave.config.security.CookieManager.REFRESH_TOKEN;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository<User> userRepository;
+    private final IndividualRepository individualRepository;
     private final AddressService addressService;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
@@ -56,6 +58,14 @@ public class UserService {
         boolean duplicateEmail = userRepository.existsByEmail(email);
         return !duplicateEmail; // userEmail이 중복이면 true, 중복이 아닌 경우 false
     }
+
+     // 개인회원 닉네임 중복여부 확인
+    @Transactional
+    public boolean checkNicknameDuplicate(String nickname) {
+        boolean duplicateNickname = individualRepository.existsByNickname(nickname);
+        return !duplicateNickname; // nickname이 중복이면 true, 중복이 아닌 경우 false
+    }
+
     // 기관 회원가입
     @Transactional
     public ResponseUserJoinDto joinInstitution(RequestInstitutionJoinDto dto) {
@@ -87,6 +97,7 @@ public class UserService {
     public ResponseUserJoinDto joinIndividual(RequestIndividualJoinDto dto) {
 
         checkUserDuplicate(dto.getEmail());
+        checkNicknameDuplicate(dto.getNickname());
 
         EmailAuth emailAuth = emailService.createEmailAuth(dto.getEmail());
 
@@ -223,6 +234,7 @@ public class UserService {
     // 개인 회원 정보 수정
     @Transactional
     public Long updateIndiInfo(RequestIndividualUpdateDto dto, Long userId) {
+        checkNicknameDuplicate(dto.getNickname());
 
         Individual savedIndividual = userRepository.findById(userId)
                 .map(Individual.class::cast)
