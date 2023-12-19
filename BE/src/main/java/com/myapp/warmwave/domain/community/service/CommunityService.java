@@ -8,22 +8,22 @@ import com.myapp.warmwave.domain.community.dto.CommunityResponseDto;
 import com.myapp.warmwave.domain.community.entity.Community;
 import com.myapp.warmwave.domain.community.mapper.CommunityMapper;
 import com.myapp.warmwave.domain.community.repository.CommunityRepository;
-import com.myapp.warmwave.domain.image.entity.Image;
 import com.myapp.warmwave.domain.image.service.ImageService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.myapp.warmwave.common.exception.CustomExceptionCode.NOT_MATCH_WRITER;
+import static com.myapp.warmwave.common.util.Utils.userIp.getUserIP;
 
 @Service
 @RequiredArgsConstructor

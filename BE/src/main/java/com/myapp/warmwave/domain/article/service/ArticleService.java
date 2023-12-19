@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.myapp.warmwave.common.exception.CustomExceptionCode.*;
+import static com.myapp.warmwave.common.util.Utils.userIp.getUserIP;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -149,13 +150,5 @@ public class ArticleService {
     public Page<MainArticleDto> findTop5OrderByCreatedAt(int num) {
         Pageable pageable = PageRequest.of(num, 5);
         return articleRepository.findTop5OrderByCreatedAtDesc(pageable);
-    }
-
-    private String getUserIP(HttpServletRequest request) {
-        String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null) {
-            return request.getRemoteAddr();
-        }
-        return xfHeader.split(",")[0];
     }
 }
