@@ -1,6 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
-import useDidMountEffect from '../../hooks/useDidMountEffect';
 import styled from 'styled-components';
 import Logo from './logo.png';
 import {useForm} from 'react-hook-form';
@@ -9,6 +8,7 @@ import * as yup from 'yup';
 import useAuthAPI from './authApi';
 import useToast from '../../hooks/useToast';
 import DaumPost from '../daumPost';
+import TermsModal from './terms';
 
 const schema = yup.object().shape({
     email: yup
@@ -35,9 +35,11 @@ const schema = yup.object().shape({
 });
 
 const Individual_signup = () => {
-    const { showToast } = useToast();
+    const {showToast} = useToast();
     // 이메일 유효 여부
     const [emailValid, setEmailValid] = useState(false);
+    const [nicknameValid, setNicknameValid] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
     const {
@@ -54,7 +56,7 @@ const Individual_signup = () => {
 
     const authAPI = useAuthAPI();
 
-    const checkDuplicated = async () => {   // 이메일 중복확인
+    const checkEmailDuplicated = async () => {   // 이메일 중복확인
         const data = getValues('email');
 
         // 이메일칸이 비어 있는지 확인
@@ -81,6 +83,33 @@ const Individual_signup = () => {
         }
     };
 
+    const checkNicknameDuplicated = async () => {   // 닉네임 중복체크
+        const data = getValues('nickname');
+
+        // 이메일칸이 비어 있는지 확인
+        if (!data || data.trim() === '') {
+            showToast('닉네임을 입력해주세요.', 'warning');
+            return;
+        }
+
+        try {
+            // 서버에 닉네임 중복 확인 요청 보내기
+            const res = await authAPI.nicknameValidCheck(data);
+
+            if (res.data) {
+                showToast('유효한 닉네임입니다.', 'success');
+                // 이메일 중복 여부를 상태로 저장
+                setNicknameValid(true);
+            } else {
+                showToast('이미 사용중인 닉네임입니다.', 'warning');
+                // 닉네임 중복 여부를 상태로 저장
+                setNicknameValid(false);
+            }
+        } catch (error) {
+            showToast('에러가 발생했습니다.', 'error');
+        }
+    }
+
     const [isDaumPostOpen, setDaumPostOpen] = useState(false);
     const [addressObj, setAddressObj] = useState({});
 
@@ -103,12 +132,20 @@ const Individual_signup = () => {
         setAddress3(obj.townAddress);
     }
 
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
     const signUp = async (data) => {
 
-        const { email, password, nickname, agreeTerms } = data;
+        const {email, password, nickname, agreeTerms} = data;
 
-        if (!email || !password || !nickname || !address1 || !address2 || !address3 || !agreeTerms || !emailValid) {
-            showToast('모든 항목을 입력하고 이메일 중복체크, 약관에 동의해야 회원가입이 가능합니다.', 'error');
+        if (!email && !password || !nickname || !address1 || !address2 || !address3 || !agreeTerms || !emailValid || !nicknameValid) {
+            showToast('모든 항목을 입력하고 중복체크, 약관에 동의해야 회원가입이 가능합니다.', 'error');
             return;
         }
 
@@ -117,36 +154,50 @@ const Individual_signup = () => {
             password: data.password,
             nickname: data.nickname,
             fullAddr: `${address1} ${address2} ${address3}`,
-            sdName:  address1,
+            sdName: address1,
             sggName: address2,
             details: address3,
         };
 
-        await authAPI
-            .SignUpIndividual(auth)
-            .then((res) => {
-                if (res.status === 201) {
-                    showToast('이메일로 인증링크가 발송되었습니다. 링크로 인증시 회원가입이 완료됩니다.', 'success');
-                    navigate('/user/login');
-                }
-            })
-            .catch((error) => showToast('회원가입에 실패했습니다. 관리자에게 문의해주세요', 'error'));
+        try {
+            const res = await authAPI.SignUpIndividual(auth);
+            if (res.status === 200 || res.status === 201) {
+                showToast(
+                    '이메일로 인증링크가 발송되었습니다. 링크로 인증시 회원가입이 완료됩니다.',
+                    'success'
+                );
+                navigate('/user/login');
+            }
+        } catch (error) {
+            showToast('회원가입에 실패했습니다. 관리자에게 문의해주세요', 'error');
+        }
     };
 
-    useDidMountEffect(() => {   //컴포넌트가 마운트된 후, 그리고 emailValid 상태가 변할 때마다 실행되는 Hook, 이메일이 유효하지 않으면 에러 메시지를 설정하고, 그렇지 않으면 이메일에 대한 에러 메시지를 제거
+    useEffect(() => {
         const email = getValues('email');
-
         // 이메일이 비어 있는지 확인
         if (!email || email.trim() === '') {
             return;
         }
-
         if (!emailValid) {
             setError('email', {type: 'custom', message: '사용중인 이메일입니다.'});
         } else {
             clearErrors('email', {type: 'custom'});
         }
     }, [emailValid]);
+
+    useEffect(() => {
+        const nickname = getValues('nickname');
+        if (!nickname || nickname.trim() === '') {
+            return;
+        }
+        if (!nicknameValid) {
+            setError('nickname', {type: 'custom', message: '사용중인 닉네임입니다.'});
+        } else {
+            clearErrors('nickname', {type: 'custom'});
+        }
+
+    }, [nicknameValid]);
 
     return (
         <StLayout>
@@ -174,7 +225,7 @@ const Individual_signup = () => {
                                 <StButton
                                     disabled={!getValues('email') || errors.email}
                                     className="emailBtn"
-                                    onClick={checkDuplicated}
+                                    onClick={checkEmailDuplicated}
                                 >
                                     중복확인
                                 </StButton>
@@ -197,15 +248,23 @@ const Individual_signup = () => {
                             <StLabel>
                                 <label>닉네임</label>
                             </StLabel>
-                            <StInput
-                                id="nickname"
-                                name="nickname"
-                                placeholder="한글 2~12자로 입력해주세요."
-                                className={errors.nickname ? 'error' : ''}
-                                {...register('nickname', {required: true})}
-                            />
+                            <InputBox>
+                                <StInput
+                                    id="nickname"
+                                    name="nickname"
+                                    placeholder="한글 2~12자로 입력해주세요."
+                                    className={errors.nickname ? 'error' : ''}
+                                    {...register('nickname', {required: true})}
+                                />
+                                <StButton
+                                    disabled={!getValues('nickname') || errors.nickname}
+                                    className="nicknameBtn"
+                                    onClick={checkNicknameDuplicated}
+                                >
+                                    중복확인
+                                </StButton>
+                            </InputBox>
                             <Typography>{errors.nickname?.message}</Typography>
-
                             <AddressGroup>
                                 <StAddressLabel>
                                     <label>시/도</label>
@@ -215,7 +274,8 @@ const Individual_signup = () => {
                                         name="address1"
                                         id="address1"
                                         value={address1}
-                                        {...register('address1', {required: true} )}
+                                        {...register('address1', {required: true})}
+                                        disabled  // 입력 상자 비활성화
                                     />
                                     <DaumPost close={handleCloseDaumPost} callFunction={callFunction}/>
                                 </AddressBox>
@@ -227,7 +287,8 @@ const Individual_signup = () => {
                                         name="address2"
                                         id="address2"
                                         value={address2}
-                                        {...register('address2', {required: true} )}
+                                        {...register('address2', {required: true})}
+                                        disabled  // 입력 상자 비활성화
                                     />
                                 </AddressBox>
                                 <StAddressLabel>
@@ -238,7 +299,8 @@ const Individual_signup = () => {
                                         name="address3"
                                         id="address3"
                                         value={address3}
-                                        {...register('address3', {required: true} )}
+                                        {...register('address3', {required: true})}
+                                        disabled  // 입력 상자 비활성화
                                     />
                                 </AddressBox>
                             </AddressGroup>
@@ -256,10 +318,12 @@ const Individual_signup = () => {
                                 id="agreeTerms"
                                 name="agreeTerms"
                                 value="1"
-                                {...register('agreeTerms', {required: true} )} />
+                                {...register('agreeTerms', {required: true})} />
                             <label className="form-check-label" htmlFor="agreeTerms">
-                                <a href="#none" className="text-body"><u>서비스이용약관 및 개인정보처리방침</u></a>에 동의합니다
+                                <a href="#none" className="text-body" onClick={openModal}>
+                                    <u>서비스이용약관 및 개인정보처리방침</u></a>에 동의합니다
                             </label>
+                                {isModalOpen && <TermsModal closeModal={closeModal} />}
                             <Link to="/user/login">
                                 <Caption>이미 회원이신가요? 로그인</Caption>
                             </Link>
@@ -293,7 +357,6 @@ const StRegister = styled.div`
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  // #FFF2CC;
   padding: 10px;
   justify-content: space-between;
 
@@ -424,6 +487,11 @@ const StButton = styled.button`
   }
 
   &.emailBtn {
+    max-width: 80px;
+    margin-left: 10px;
+  }
+  
+  &.nicknameBtn {
     max-width: 80px;
     margin-left: 10px;
   }
