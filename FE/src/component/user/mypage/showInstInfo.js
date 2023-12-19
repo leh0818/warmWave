@@ -1,6 +1,8 @@
-function ShowInstInfo({ sendDataToParent }) {
+function ShowInstInfo(props) {
+  const { name, email, address } = props.userInfo
+
   const goToEditPage = () => {
-    sendDataToParent('edit');
+    props.sendDataToParent('edit');
   }
 
   return (
@@ -12,7 +14,7 @@ function ShowInstInfo({ sendDataToParent }) {
               <h6 className="mb-0">기관이름</h6>
             </div>
             <div className="col-sm-9 text-secondary">
-              Kenneth Valdez
+              {name}
             </div>
           </div>
           <hr />
@@ -21,16 +23,7 @@ function ShowInstInfo({ sendDataToParent }) {
               <h6 className="mb-0">이메일</h6>
             </div>
             <div className="col-sm-9 text-secondary">
-              fip@jukmuh.al
-            </div>
-          </div>
-          <hr />
-          <div className="row">
-            <div className="col-sm-3">
-              <h6 className="mb-0">사업자번호</h6>
-            </div>
-            <div className="col-sm-9 text-secondary">
-              (239) 816-9029
+              {email}
             </div>
           </div>
           <hr />
@@ -39,13 +32,13 @@ function ShowInstInfo({ sendDataToParent }) {
               <h6 className="mb-0">기관주소</h6>
             </div>
             <div className="col-sm-9 text-secondary">
-              Bay Area, San Francisco, CA
+              {address}
             </div>
           </div>
           <hr />
           <div className="row">
             <div className="col-sm-12">
-              <a className="btn btn-info" onClick={goToEditPage}>정보수정</a>
+              <button className="btn btn-info" onClick={goToEditPage}>비밀번호 변경</button>
             </div>
           </div>
         </div>
