@@ -1,6 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
-import useDidMountEffect from '../../hooks/useDidMountEffect';
 import styled from 'styled-components';
 import Logo from './logo.png';
 import {useForm} from 'react-hook-form';
@@ -9,6 +8,8 @@ import * as yup from 'yup';
 import useAuthAPI from './authApi';
 import useToast from '../../hooks/useToast';
 import DaumPost from '../daumPost';
+import TermsModal from './terms';
+import BusinessValidate from './business_validate'
 
 const schema = yup.object().shape({
     email: yup
@@ -23,13 +24,20 @@ const schema = yup.object().shape({
             /^(?=.*[a-zA-Z])(?=.*[0-9])[^\s]*$/,
             '공백을 제외한 영문, 숫자를 포함하여 입력해주세요',
         )
-        .required('비밀번호를 입력해주세요')
+        .required('비밀번호를 입력해주세요'),
+    registerNum: yup
+        .string()
+        .matches(/^\d{10}$/,'공백을 제외한 숫자만 입력해주세요')
+        .required('사업자등록번호를 입력해주세요')
 });
 
 const Institution_signup = () => {
-    const { showToast } = useToast();
+    const {showToast} = useToast();
     // 이메일 유효 여부
     const [emailValid, setEmailValid] = useState(false);
+    // 사업자등록번호 유효 여부
+    const [registerNumValid, setRegisterNumValid] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
     const {
@@ -46,7 +54,7 @@ const Institution_signup = () => {
 
     const authAPI = useAuthAPI();
 
-    const checkDuplicated = async () => {   // 이메일 중복확인
+    const checkEmailDuplicated = async () => {   // 이메일 중복확인
         const data = getValues('email');
 
         // 이메일칸이 비어 있는지 확인
@@ -73,6 +81,34 @@ const Institution_signup = () => {
         }
     };
 
+    const handleBusinessValidation = async () => {
+        const data = getValues('registerNum');
+
+        // 사업자등록번호 칸이 비어 있는지 확인
+        if (!data || data.trim() === '') {
+            showToast('사업자등록번호를 입력해주세요.','warning');
+            return;
+        }
+
+        try {
+            // 국세청API로 사업자등록번호 진위확인 요청 보내기
+            const res = await BusinessValidate(data);
+            // 납세자상태(명칭) 01: 계속사업자,02: 휴업자, 03: 폐업자
+            if (res.data && res.data.length > 0 && res.data[0].b_stt_cd === '01') {
+                showToast('사업자등록번호가 확인되었습니다.','success')
+                setRegisterNumValid(true);
+            } else if (res.data && res.data.length > 0) {
+                showToast('유효하지 않은 사업자입니다.', 'warning');
+                setRegisterNumValid(false);
+            } else {
+                showToast('사업자등록번호 유효성 검사에 실패했습니다.', 'error');
+                setRegisterNumValid(false);
+            }
+        } catch (error) {
+            showToast('에러가 발생했습니다.','error')
+        }
+    }
+    
     const [isDaumPostOpen, setDaumPostOpen] = useState(false);
     const [addressObj, setAddressObj] = useState({});
 
@@ -95,12 +131,20 @@ const Institution_signup = () => {
         setAddress3(obj.townAddress);
     }
 
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
     const signUp = async (data) => {
 
-        const { email, password, institutionName, agreeTerms } = data;
+        const {email, password, institutionName, registerNum, agreeTerms} = data;
 
-        if (!email || !password || !institutionName || !address1 || !address2 || !address3 || !agreeTerms || !emailValid) {
-            showToast('모든 항목을 입력하고 이메일 중복체크, 약관에 동의해야 회원가입이 가능합니다.', 'error');
+        if (!email && !password || !institutionName || !registerNum || !address1 || !address2 || !address3 || !agreeTerms || !emailValid || !registerNumValid) {
+            showToast('모든 항목을 입력하고 중복체크, 약관에 동의해야 회원가입이 가능합니다.', 'error');
             return;
         }
 
@@ -110,36 +154,49 @@ const Institution_signup = () => {
             institutionName: data.institutionName,
             registerNum: data.registerNum,
             fullAddr: `${address1} ${address2} ${address3}`,
-            sdName:  address1,
+            sdName: address1,
             sggName: address2,
             details: address3,
         };
 
-        await authAPI
-            .SignUpInstitution(auth)
-            .then((res) => {
-                if (res.status === 201) {
-                    showToast('이메일로 인증링크가 발송되었습니다. 링크로 인증시 회원가입이 완료됩니다.', 'success');
-                    navigate('/user/login');
-                }
-            })
-            .catch((error) => showToast('회원가입에 실패했습니다. 관리자에게 문의해주세요', 'error'));
+        try {
+            const res = await authAPI.SignUpInstitution(auth);
+            if (res.status === 200 || res.status === 201) {
+                showToast(
+                    '이메일로 인증링크가 발송되었습니다. 링크로 인증시 회원가입이 완료됩니다.',
+                    'success'
+                );
+                navigate('/user/login');
+            }
+        } catch (error) {
+            showToast('회원가입에 실패했습니다. 관리자에게 문의해주세요', 'error');
+        }
     };
 
-    useDidMountEffect(() => {   //컴포넌트가 마운트된 후, 그리고 emailValid 상태가 변할 때마다 실행되는 Hook, 이메일이 유효하지 않으면 에러 메시지를 설정하고, 그렇지 않으면 이메일에 대한 에러 메시지를 제거
+    useEffect(() => {
         const email = getValues('email');
-
         // 이메일이 비어 있는지 확인
         if (!email || email.trim() === '') {
             return;
         }
-
         if (!emailValid) {
             setError('email', {type: 'custom', message: '사용중인 이메일입니다.'});
         } else {
             clearErrors('email', {type: 'custom'});
         }
     }, [emailValid]);
+    
+    useEffect(() => {
+        const registerNum = getValues('registerNum');
+        if (!registerNum || registerNum.trim() === '') {
+            return;
+        }
+        if (!registerNumValid) {
+            setError('registerNum', {type: 'custom', message: '유효하지 않은 사업자입니다.'});
+        } else {
+            clearErrors('registerNum', {type: 'custom'});
+        }
+    }, [registerNumValid]);
 
     return (
         <StLayout>
@@ -152,7 +209,7 @@ const Institution_signup = () => {
                     </Top>
                     <Main>
                         <form onSubmit={handleSubmit(signUp)}>
-                            <Title>회원가입</Title>
+                            <Title>복지기관 회원가입</Title>
                             <StLabel>
                                 <label>이메일</label>
                             </StLabel>
@@ -167,7 +224,7 @@ const Institution_signup = () => {
                                 <StButton
                                     disabled={!getValues('email') || errors.email}
                                     className="emailBtn"
-                                    onClick={checkDuplicated}
+                                    onClick={checkEmailDuplicated}
                                 >
                                     중복확인
                                 </StButton>
@@ -188,28 +245,37 @@ const Institution_signup = () => {
                             />
                             <Typography>{errors.password?.message}</Typography>
                             <StLabel>
-                                <label>기관이름</label>
+                                <label>기관명</label>
                             </StLabel>
-                            <StInput
-                                id="institutionName"
-                                name="institutionName"
-                                placeholder="기관명을 입력해주세요."
-                                className={errors.institutionName ? 'error' : ''}
-                                {...register('institutionName', {required: true})}
-                            />
-                            <Typography>{errors.institutionName?.message}</Typography>
+                            <InputBox>
+                                <StInput
+                                    id="institutionName"
+                                    name="institutionName"
+                                    placeholder="기관이름을 입력해주세요."
+                                    className={errors.institutionName ? 'error' : ''}
+                                    {...register('institutionName', {required: true})}
+                                />
+                            </InputBox>
                             <StLabel>
                                 <label>사업자등록번호</label>
                             </StLabel>
-                            <StInput
-                                id="registerNum"
-                                name="registerNum"
-                                placeholder="사업자등록번호를 입력해주세요."
-                                className={errors.registerNum ? 'error' : ''}
-                                {...register('registerNum', {required: true})}
-                            />
+                            <InputBox>
+                                <StInput
+                                    id="registerNum"
+                                    name="registerNum"
+                                    placeholder="숫자로만 10자리를 입력해주세요."
+                                    className={errors.registerNum ? 'error' : ''}
+                                    {...register('registerNum', {required: true})}
+                                />
+                                <StButton
+                                    disabled={!getValues('registerNum') || errors.registerNum}
+                                    className="registerNumBtn"
+                                    onClick={handleBusinessValidation}
+                                >
+                                    조회
+                                </StButton>
+                            </InputBox>
                             <Typography>{errors.registerNum?.message}</Typography>
-
                             <AddressGroup>
                                 <StAddressLabel>
                                     <label>시/도</label>
@@ -218,8 +284,10 @@ const Institution_signup = () => {
                                     <StAddress
                                         name="address1"
                                         id="address1"
+                                        placeholder="기관 주소를 등록해주세요."
                                         value={address1}
-                                        {...register('address1', {required: true} )}
+                                        {...register('address1', {required: true})}
+                                        disabled  // 입력 상자 비활성화
                                     />
                                     <DaumPost close={handleCloseDaumPost} callFunction={callFunction}/>
                                 </AddressBox>
@@ -231,7 +299,8 @@ const Institution_signup = () => {
                                         name="address2"
                                         id="address2"
                                         value={address2}
-                                        {...register('address2', {required: true} )}
+                                        {...register('address2', {required: true})}
+                                        disabled  // 입력 상자 비활성화
                                     />
                                 </AddressBox>
                                 <StAddressLabel>
@@ -242,7 +311,8 @@ const Institution_signup = () => {
                                         name="address3"
                                         id="address3"
                                         value={address3}
-                                        {...register('address3', {required: true} )}
+                                        {...register('address3', {required: true})}
+                                        disabled  // 입력 상자 비활성화
                                     />
                                 </AddressBox>
                             </AddressGroup>
@@ -260,10 +330,12 @@ const Institution_signup = () => {
                                 id="agreeTerms"
                                 name="agreeTerms"
                                 value="1"
-                                {...register('agreeTerms', {required: true} )} />
+                                {...register('agreeTerms', {required: true})} />
                             <label className="form-check-label" htmlFor="agreeTerms">
-                                <a href="#none" className="text-body"><u>서비스이용약관 및 개인정보처리방침</u></a>에 동의합니다
+                                <a href="#none" className="text-body" onClick={openModal}>
+                                    <u>서비스이용약관 및 개인정보처리방침</u></a>에 동의합니다
                             </label>
+                            {isModalOpen && <TermsModal closeModal={closeModal} />}
                             <Link to="/user/login">
                                 <Caption>이미 회원이신가요? 로그인</Caption>
                             </Link>
@@ -428,6 +500,11 @@ const StButton = styled.button`
   }
 
   &.emailBtn {
+    max-width: 80px;
+    margin-left: 10px;
+  }
+  
+  &.registerNumBtn {
     max-width: 80px;
     margin-left: 10px;
   }
