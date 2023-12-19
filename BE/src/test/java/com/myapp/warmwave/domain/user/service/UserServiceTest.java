@@ -11,6 +11,7 @@ import com.myapp.warmwave.domain.user.dto.*;
 import com.myapp.warmwave.domain.user.entity.Individual;
 import com.myapp.warmwave.domain.user.entity.Institution;
 import com.myapp.warmwave.domain.user.entity.User;
+import com.myapp.warmwave.domain.user.repository.IndividualRepository;
 import com.myapp.warmwave.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +35,9 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
     @Mock
     private UserRepository<User> userRepository;
+
+    @Mock
+    private IndividualRepository individualRepository;
 
     @Mock
     private AddressService addressService;
@@ -87,8 +91,8 @@ public class UserServiceTest {
         individual = Individual.builder()
                 .id(1L)
                 .email("test@gmail.com")
-                .password(passwordEncoder.encode("1234"))
-                .nickname("닉네임1")
+                .password(passwordEncoder.encode("a1234567"))
+                .nickname("닉네임")
                 .address(address1)
                 .temperature(0F)
                 .profileImg(UserService.DEFAULT_PROFILE_IMG_INDI)
@@ -101,12 +105,12 @@ public class UserServiceTest {
         institution = Institution.builder()
                 .id(2L)
                 .email("test@gmail.com")
-                .password(passwordEncoder.encode("1234"))
+                .password(passwordEncoder.encode("a1234567"))
                 .institutionName("기관명1")
                 .address(address2)
                 .temperature(0F)
                 .profileImg(UserService.DEFAULT_PROFILE_IMG_INST)
-                .registerNum("12")
+                .registerNum("1234567890")
                 .emailAuth(emailAuth)
                 .role(Role.INSTITUTION)
                 .articles(new ArrayList<>())
@@ -114,12 +118,42 @@ public class UserServiceTest {
                 .isApprove(false)
                 .build();
     }
+    
+    @DisplayName("이메일 중복체크 기능 확인")
+    @Test
+    void checkUserDuplicate() {
+        // given
+        String email = "test@example.com";
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+
+        // when
+        boolean result = userService.checkUserDuplicate(email);
+
+        // then
+        assertThat(result).isTrue();
+    }
+    
+    @DisplayName("닉네임 중복체크 기능 확인")
+    @Test
+    void checkNicknameDuplicate() {
+        // given
+        String nickname = "닉네임";
+        when(individualRepository.existsByNickname(anyString())).thenReturn(false);
+
+        // when
+        boolean result = userService.checkNicknameDuplicate(nickname);
+
+        // then
+        assertThat(result).isTrue();
+    }
 
     @DisplayName("개인회원 회원가입 기능 확인")
     @Test
     void joinIndiv() {
         // given
         RequestIndividualJoinDto requestDto = saveIndiv();
+        when(userService.checkUserDuplicate(anyString())).thenReturn(false);
+        when(userService.checkNicknameDuplicate(anyString())).thenReturn(false);
 
         // when
         ResponseUserJoinDto responseDto = userService.joinIndividual(requestDto);
@@ -265,7 +299,7 @@ public class UserServiceTest {
         userService.joinIndividual(reqJoinDto);
 
         RequestIndividualUpdateDto updateDto = new RequestIndividualUpdateDto(
-                "12345", "닉네임1 변경", "서울 성북구 OO동", "서울", "성북구", "OO동"
+                "b1234567", "닉네임변경", "서울 성북구 OO동", "서울", "성북구", "OO동"
         );
 
         Long userId = 1L;
@@ -273,6 +307,7 @@ public class UserServiceTest {
 
         when(userRepository.findById(any())).thenReturn(Optional.of(individual));
         when(addressService.updateIndividualAddress(any(), any())).thenReturn(address1);
+        when(userService.checkNicknameDuplicate(anyString())).thenReturn(false);
 
         // when
         Long id = userService.updateIndiInfo(updateDto, userId);
@@ -291,7 +326,7 @@ public class UserServiceTest {
         userService.joinInstitution(reqJoinDto);
 
         RequestInstitutionUpdateDto updateDto = new RequestInstitutionUpdateDto(
-                "12345", "서울 성북구 OO동", "서울", "성북구", "OO동"
+                "b1234567", "서울 성북구 OO동", "서울", "성북구", "OO동"
         );
 
         Long userId = 2L;
@@ -346,7 +381,7 @@ public class UserServiceTest {
     // 개인 회원가입 과정 메서드화
     private RequestIndividualJoinDto saveIndiv() {
         RequestIndividualJoinDto requestDto = new RequestIndividualJoinDto(
-                "test@gmail.com", "1234", "닉네임1",
+                "test@gmail.com", "a1234567", "닉네임",
                 "서울 강남구 테헤란로 123", "서울", "강남구",
                 "테헤란로 123"
         );
@@ -363,8 +398,8 @@ public class UserServiceTest {
     // 기관 회원가입 과정 메서드화
     private RequestInstitutionJoinDto saveInst() {
         RequestInstitutionJoinDto requestDto = new RequestInstitutionJoinDto(
-                "test@gmail.com", "1234", "기관명1",
-                "12", "서울 강남구 테헤란로 123", "서울", "강남구",
+                "test@gmail.com", "a1234567", "기관명1",
+                "1234567890", "서울 강남구 테헤란로 123", "서울", "강남구",
                 "테헤란로 123"
         );
 

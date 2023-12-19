@@ -14,9 +14,11 @@ import com.myapp.warmwave.domain.user.dto.*;
 import com.myapp.warmwave.domain.user.entity.Individual;
 import com.myapp.warmwave.domain.user.entity.Institution;
 import com.myapp.warmwave.domain.user.entity.User;
+import com.myapp.warmwave.domain.user.repository.IndividualRepository;
 import com.myapp.warmwave.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import static com.myapp.warmwave.config.security.CookieManager.REFRESH_TOKEN;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository<User> userRepository;
+    private final IndividualRepository individualRepository;
     private final AddressService addressService;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
@@ -50,9 +52,24 @@ public class UserService {
     public static final String DEFAULT_PROFILE_IMG_INST = "/static/profile/default_inst.jpg";
     public static final String DEFAULT_PROFILE_IMG_INDI = "/static/profile/default_indi.jpg";
 
+    // 이메일 중복여부 확인
+    @Transactional
+    public boolean checkUserDuplicate(String email) {
+        boolean duplicateEmail = userRepository.existsByEmail(email);
+        return !duplicateEmail; // userEmail이 중복이면 true, 중복이 아닌 경우 false
+    }
+
+    // 개인회원 닉네임 중복여부 확인
+    @Transactional
+    public boolean checkNicknameDuplicate(String nickname) {
+        boolean duplicateNickname = individualRepository.existsByNickname(nickname);
+        return !duplicateNickname; // nickname이 중복이면 true, 중복이 아닌 경우 false
+    }
+
     // 기관 회원가입
     @Transactional
     public ResponseUserJoinDto joinInstitution(RequestInstitutionJoinDto dto) {
+        checkUserDuplicate(dto.getEmail());
 
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new CustomException(ALREADY_EXIST_USER);
@@ -81,6 +98,10 @@ public class UserService {
     // 개인 회원가입
     @Transactional
     public ResponseUserJoinDto joinIndividual(RequestIndividualJoinDto dto) {
+
+        checkUserDuplicate(dto.getEmail());
+        checkNicknameDuplicate(dto.getNickname());
+
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new CustomException(ALREADY_EXIST_USER);
         }
@@ -218,6 +239,8 @@ public class UserService {
     // 개인 회원 정보 수정
     @Transactional
     public Long updateIndiInfo(RequestIndividualUpdateDto dto, Long userId) {
+
+        checkNicknameDuplicate(dto.getNickname());
 
         Individual savedIndividual = userRepository.findById(userId)
                 .map(Individual.class::cast)
