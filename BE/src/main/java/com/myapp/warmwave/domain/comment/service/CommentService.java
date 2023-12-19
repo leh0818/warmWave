@@ -54,9 +54,12 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponseDto updateComment(CommentRequestDto dto, Long commentId, Long communityId) {
+    public CommentResponseDto updateComment(CommentRequestDto dto, Long commentId, Long communityId, String userEmail) {
         Comment originComment = validateCommunityAndComment(commentId, communityId);
 
+        if(!originComment.getUser().getEmail().equals(userEmail)) {
+            throw new CustomException(NOT_MATCH_WRITER);
+        }
         originComment.updateComment(dto.getContents());
         commentRepository.save(originComment);
 

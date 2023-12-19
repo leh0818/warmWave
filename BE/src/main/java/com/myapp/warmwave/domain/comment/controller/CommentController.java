@@ -40,8 +40,10 @@ public class CommentController {
 
     @PutMapping("/{commentId}")
     public ResponseEntity<CommentResponseDto> updateComment(@RequestBody CommentRequestDto dto,
-                                                            @PathVariable("commentId") Long commentId, @PathVariable Long communityId) {
-        return new ResponseEntity<>(commentService.updateComment(dto, commentId, communityId), HttpStatus.OK);
+                                                            @PathVariable("commentId") Long commentId, @PathVariable Long communityId,
+                                                            @AuthenticationPrincipal UserDetails userDetails) {
+        String userEmail = userDetails.getUsername();
+        return new ResponseEntity<>(commentService.updateComment(dto, commentId, communityId, userEmail), HttpStatus.OK);
     }
 
     @DeleteMapping("/{commentId}")

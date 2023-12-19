@@ -46,8 +46,10 @@ public class CommunityController {
     public ResponseEntity<CommunityResponseDto> updateCommunity(@PathVariable("communityId") Long communityId,
                                                                 @ModelAttribute CommunityPatchDto dto,
                                                                 List<MultipartFile> images,
-                                                                @AuthenticationPrincipal UserDetails userDetails) throws IOException {
-        return new ResponseEntity<>(communityService.updateCommunity(communityId, dto, images), HttpStatus.OK);
+                                                                @AuthenticationPrincipal UserDetails userDetails,
+                                                                HttpServletRequest request) throws IOException {
+        String userEmail = userDetails.getUsername();
+        return new ResponseEntity<>(communityService.updateCommunity(communityId, dto, images, userEmail, request), HttpStatus.OK);
     }
 
     @GetMapping("/{communityId}")

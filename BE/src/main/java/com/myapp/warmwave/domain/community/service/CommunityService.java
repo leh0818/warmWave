@@ -56,10 +56,14 @@ public class CommunityService {
 //    }
 
     @Transactional
-    public CommunityResponseDto updateCommunity(Long communityId, CommunityPatchDto dto, List<MultipartFile> images) throws IOException {
+    public CommunityResponseDto updateCommunity(Long communityId, CommunityPatchDto dto, List<MultipartFile> images, String userEmail, HttpServletRequest request) throws IOException {
         System.out.println("images(service) : " + images); // null
 
         Community originCommunity = getCommunity(communityId);
+
+        if(!originCommunity.getUser().getEmail().equals(userEmail)) {
+            throw new CustomException(NOT_MATCH_WRITER);
+        }
 
         // 사진 지우고, 새로 등록하고, dto 데이터들로 업데이트 하고 세이브
         if(!CollectionUtils.isEmpty(images)) {
@@ -68,6 +72,7 @@ public class CommunityService {
         }
         communityMapper.updateCommunity(originCommunity, dto);
         originCommunity.getImages().addAll(imageService.uploadImagesForCommunity(originCommunity, images));
+        originCommunity.setUserIp(getUserIP(request));
 
         Community updatedCommunity = saveCommunity(originCommunity);
         return communityMapper.communityToCommunityResponseDto(updatedCommunity);
@@ -76,6 +81,9 @@ public class CommunityService {
     @Transactional
     public void deleteCommunity(Long communityId) {
         communityRepository.delete(getCommunity(communityId));
+
+        if(communityRepository.existsById(communityId))
+            throw new CustomException(CustomExceptionCode.FAILED_TO_REMOVE);
     }
 
     private List<String> filterImageUrls(List<String> originUrls, List<String> updatedUrls) {
