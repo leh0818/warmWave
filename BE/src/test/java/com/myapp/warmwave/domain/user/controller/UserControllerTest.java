@@ -48,11 +48,11 @@ public class UserControllerTest {
     void addIndiv() throws Exception {
         // given
         RequestIndividualJoinDto reqDto = new RequestIndividualJoinDto(
-                "test1@gmail.com", "1234", "개인1", "서울 강남구 OO동", "서울", "강남구", "OO동"
+                "test1@gmail.com", "a1234567", "개인", "서울 강남구 OO동", "서울", "강남구", "OO동"
         );
 
         ResponseUserJoinDto resDto = new ResponseUserJoinDto(
-                1L, "test1@gmail.com", "qqqqq"
+                1L, "test1@gmail.com", "z1234"
         );
 
         // when
@@ -72,11 +72,11 @@ public class UserControllerTest {
     void addInst() throws Exception {
         // given
         RequestInstitutionJoinDto reqDto = new RequestInstitutionJoinDto(
-                "test1@gmail.com", "1234", "기관1", "12345", "서울 강남구 OO동", "서울", "강남구", "OO동"
+                "test1@gmail.com", "a1234567", "기관1", "1234567890", "서울 강남구 OO동", "서울", "강남구", "OO동"
         );
 
         ResponseUserJoinDto resDto = new ResponseUserJoinDto(
-                2L, "test2@gmail.com", "wwwww"
+                2L, "test2@gmail.com", "z1234"
         );
 
         // when
@@ -93,10 +93,11 @@ public class UserControllerTest {
 
     @DisplayName("이메일 인증 확인")
     @Test
+    @WithMockUser
     void checkEmail() throws Exception {
         // given
         RequestEmailAuthDto reqDto = new RequestEmailAuthDto(
-                "test1@gmail.com", "qqqqq"
+                "test1@gmail.com", "z1234"
         );
 
         // when
@@ -106,7 +107,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(reqDto))
                         .with(csrf()))
-                .andExpect(status().isOk())
+                .andExpect(status().is3xxRedirection())
                 .andDo(print());
     }
 
@@ -115,7 +116,7 @@ public class UserControllerTest {
     void login() throws Exception {
         // given
         RequestUserLoginDto reqDto = new RequestUserLoginDto(
-                "test1@gmail.com", "1234"
+                "test1@gmail.com", "a1234567"
         );
 
         ResponseUserLoginDto resDto = new ResponseUserLoginDto(
@@ -139,7 +140,7 @@ public class UserControllerTest {
     void readAllIndiv() throws Exception {
         // given
         ResponseUserDto resDto = new ResponseUserDto(
-                1L, "개인1", "test1@gmail.com", Role.INDIVIDUAL, 0F, true, "주소", 0, 0
+                1L, "개인", "test1@gmail.com", Role.INDIVIDUAL, 0F, true, "주소", 0, 0
         );
 
         List<ResponseUserDto> dtoList = List.of(resDto);
@@ -185,7 +186,7 @@ public class UserControllerTest {
         Long userId = 1L;
 
         ResponseUserDto resDto = new ResponseUserDto(
-                1L, "개인1", "test1@gmail.com", Role.INDIVIDUAL, 0F, null, "주소", 0, 0
+                1L, "개인", "test1@gmail.com", Role.INDIVIDUAL, 0F, null, "주소", 0, 0
         );
 
         // when
@@ -206,7 +207,7 @@ public class UserControllerTest {
         Long userId = 1L;
 
         ResponseUserDto resDto = new ResponseUserDto(
-                1L, "개인1", "test1@gmail.com", Role.INDIVIDUAL, 0F, true, "주소", 0, 0
+                1L, "개인", "test1@gmail.com", Role.INDIVIDUAL, 0F, true, "주소", 0, 0
         );
 
         // when
@@ -247,7 +248,7 @@ public class UserControllerTest {
         // given
         Long userId = 1L;
         RequestIndividualUpdateDto reqDto = new RequestIndividualUpdateDto(
-                "12345", "개인 변경1", "서울 성북구 XX동", "서울", "성북구", "XX동"
+                "b1234567", "개인변경", "서울 성북구 XX동", "서울", "성북구", "XX동"
         );
 
         // when
@@ -268,7 +269,7 @@ public class UserControllerTest {
         // given
         Long userId = 2L;
         RequestInstitutionUpdateDto reqDto = new RequestInstitutionUpdateDto(
-                "12345", "서울 성북구 XX동", "서울", "성북구", "XX동"
+                "b1234567", "서울 성북구 XX동", "서울", "성북구", "XX동"
         );
 
         // when
