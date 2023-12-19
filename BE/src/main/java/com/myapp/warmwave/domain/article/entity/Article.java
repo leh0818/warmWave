@@ -66,6 +66,10 @@ public class Article extends BaseEntity {
         this.articleCategories = articleCategories;
     }
 
+    public void setArticleStatusByString(String articleStatus) {
+        this.articleStatus = Status.getStatusByString(articleStatus);
+    }
+
     public void applyPatch(String userIp, ArticlePatchDto dto, List<ArticleCategory> articleCategories) {
         this.userIp = userIp;
         this.title = dto.getTitle();
