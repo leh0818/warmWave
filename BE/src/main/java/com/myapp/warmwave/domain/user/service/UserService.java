@@ -18,6 +18,7 @@ import com.myapp.warmwave.domain.user.repository.IndividualRepository;
 import com.myapp.warmwave.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -59,7 +59,7 @@ public class UserService {
         return !duplicateEmail; // userEmail이 중복이면 true, 중복이 아닌 경우 false
     }
 
-     // 개인회원 닉네임 중복여부 확인
+    // 개인회원 닉네임 중복여부 확인
     @Transactional
     public boolean checkNicknameDuplicate(String nickname) {
         boolean duplicateNickname = individualRepository.existsByNickname(nickname);
@@ -69,8 +69,11 @@ public class UserService {
     // 기관 회원가입
     @Transactional
     public ResponseUserJoinDto joinInstitution(RequestInstitutionJoinDto dto) {
-
         checkUserDuplicate(dto.getEmail());
+
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new CustomException(ALREADY_EXIST_USER);
+        }
 
         Optional<Address> address = addressService.findAddress(dto.getFullAddr());
 
@@ -98,6 +101,10 @@ public class UserService {
 
         checkUserDuplicate(dto.getEmail());
         checkNicknameDuplicate(dto.getNickname());
+
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new CustomException(ALREADY_EXIST_USER);
+        }
 
         EmailAuth emailAuth = emailService.createEmailAuth(dto.getEmail());
 
@@ -139,7 +146,7 @@ public class UserService {
             throw new CustomException(PASSWORD_NOT_MATCH);
 
         if (Boolean.FALSE.equals(user.getEmailAuth().getIsVerified()))
-            throw new CustomException(NEED_EMAIL_AUTHENTICATION);
+            throw new CustomException(EXPIRED_JWT);
 
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtProvider.EMAIL_CLAIM, user.getEmail());
@@ -232,6 +239,7 @@ public class UserService {
     // 개인 회원 정보 수정
     @Transactional
     public Long updateIndiInfo(RequestIndividualUpdateDto dto, Long userId) {
+
         checkNicknameDuplicate(dto.getNickname());
 
         Individual savedIndividual = userRepository.findById(userId)
