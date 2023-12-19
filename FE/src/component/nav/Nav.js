@@ -35,7 +35,7 @@ function Nav() {
                                     <li><NavLink to="/community">Community</NavLink></li>
                                     {!loginState.id ?
                                         <>
-                                            <li><NavLink to="/signup/individual">SignUp</NavLink></li>
+                                            <li><NavLink to="/signup">SignUp</NavLink></li>
                                             <li><NavLink to="/user/login">LogIn</NavLink></li>
                                         </>
                                         :
