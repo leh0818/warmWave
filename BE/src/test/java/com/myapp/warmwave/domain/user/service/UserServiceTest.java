@@ -11,6 +11,7 @@ import com.myapp.warmwave.domain.user.dto.*;
 import com.myapp.warmwave.domain.user.entity.Individual;
 import com.myapp.warmwave.domain.user.entity.Institution;
 import com.myapp.warmwave.domain.user.entity.User;
+import com.myapp.warmwave.domain.user.repository.IndividualRepository;
 import com.myapp.warmwave.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +35,9 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
     @Mock
     private UserRepository<User> userRepository;
+
+    @Mock
+    private IndividualRepository individualRepository;
 
     @Mock
     private AddressService addressService;
@@ -111,8 +115,36 @@ public class UserServiceTest {
                 .role(Role.INSTITUTION)
                 .articles(new ArrayList<>())
                 .favoriteList(new ArrayList<>())
-                .isApprove(false)
+                .isApprove(true)    // 블랙리스트에 등록된 경우 FALSE로 변경
                 .build();
+    }
+    
+    @DisplayName("이메일 중복체크 기능 확인")
+    @Test
+    void checkUserDuplicate() {
+        // given
+        String email = "test@example.com";
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+
+        // when
+        boolean result = userService.checkUserDuplicate(email);
+
+        // then
+        assertThat(result).isTrue();
+    }
+    
+    @DisplayName("닉네임 중복체크 기능 확인")
+    @Test
+    void checkNicknameDuplicate() {
+        // given
+        String nickname = "test";
+        when(individualRepository.existsByNickname(anyString())).thenReturn(false);
+
+        // when
+        boolean result = userService.checkNicknameDuplicate(nickname);
+
+        // then
+        assertThat(result).isTrue();
     }
 
     @DisplayName("개인회원 회원가입 기능 확인")
@@ -120,6 +152,8 @@ public class UserServiceTest {
     void joinIndiv() {
         // given
         RequestIndividualJoinDto requestDto = saveIndiv();
+        when(userService.checkUserDuplicate(anyString())).thenReturn(false);
+        when(userService.checkNicknameDuplicate(anyString())).thenReturn(false);
 
         // when
         ResponseUserJoinDto responseDto = userService.joinIndividual(requestDto);
@@ -273,6 +307,7 @@ public class UserServiceTest {
 
         when(userRepository.findById(any())).thenReturn(Optional.of(individual));
         when(addressService.updateIndividualAddress(any(), any())).thenReturn(address1);
+        when(userService.checkNicknameDuplicate(anyString())).thenReturn(false);
 
         // when
         Long id = userService.updateIndiInfo(updateDto, userId);
