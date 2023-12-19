@@ -124,7 +124,7 @@ public class UserControllerTest {
         );
 
         // when
-        when(userService.loginUser(any())).thenReturn(resDto);
+        when(userService.loginUser(any(),any())).thenReturn(resDto);
 
         // then
         mockMvc.perform(post("/api/users/login")
