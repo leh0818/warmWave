@@ -29,6 +29,7 @@ public class RequestInstitutionJoinDto {
     private String institutionName;
 
     @NotBlank(message = "사업자 등록번호는 필수 입력입니다.")
+    @Pattern(regexp = "\\d{10}", message = "사업자 등록번호는 10자리 숫자로 입력해야 합니다.")
     private String registerNum;
 
     // 전체 주소
