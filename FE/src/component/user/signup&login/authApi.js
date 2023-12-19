@@ -1,16 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useToast from '../../hooks/useToast';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export const API_SERVER_HOST = 'http://localhost:8080';
 const host = API_SERVER_HOST;
 
 const instance = axios.create({
-    baseURL: host,
-    withCredentials: true,
-    headers: {
-        "Access-Control-Allow-Origin": "*",
-    },
+    baseURL: host
 });
 
 const useAuthAPI = () => {
@@ -18,7 +15,7 @@ const useAuthAPI = () => {
 
     const Login = async (auth) => {
         try {
-            const response = await instance.post(`${host}/api/users/login`, auth);
+            const response = await instance.post(`/api/users/login`, auth);
             return response;
         } catch (error) {
             showToast('에러가 발생했습니다');
@@ -27,7 +24,7 @@ const useAuthAPI = () => {
 
     const SignUpIndividual = async (auth) => {
         try {
-            const response = await instance.post(`${host}/api/users/register/individual`, auth);
+            const response = await instance.post(`/api/users/register/individual`, auth);
             return response;
         } catch (error) {
             showToast('에러가 발생했습니다');
@@ -36,7 +33,7 @@ const useAuthAPI = () => {
 
     const SignUpInstitution = async (auth) => {
         try {
-            const response = await instance.post(`${host}/api/users/register/institution`, auth);
+            const response = await instance.post(`/api/users/register/institution`, auth);
             return response;
         } catch (error) {
             showToast('에러가 발생했습니다');
@@ -45,18 +42,61 @@ const useAuthAPI = () => {
 
     const emailValidCheck = async (email) => {
         try {
-            const response = await instance.get(`${host}/api/users/register/checkEmail?email=${email}`);
+            const response = await instance.get(`/api/users/register/checkEmail?email=${email}`);
             return response;
         } catch (error) {
             showToast('에러가 발생했습니다');
         }
     };
 
+    const nicknameValidCheck = async (nickname) => {
+        try {
+            const response = await instance.get(`/api/users/register/checkNickname?nickname=${nickname}`);
+            return response;
+        } catch (error) {
+            showToast('에러가 발생했습니다');
+        }
+    }
+
     return {
         Login,
         SignUpIndividual,
-        emailValidCheck
+        SignUpInstitution,
+        emailValidCheck,
+        nicknameValidCheck,
     };
+};
+
+export const useConfirmEmail = (requestDto) => {
+    const { showToast } = useToast();
+    const navigate = useNavigate();
+    const [redirect, setRedirect] = useState(false);
+
+    useEffect(() => {
+        const confirmEmail = async () => {
+            try {
+                const response = await instance.get(`/api/users/confirm-email`, { params: requestDto });
+                const message = response.data;
+                if (message === "인증이 완료되었습니다.") {
+                    showToast(message);
+                    setRedirect(true);
+                }
+            } catch (error) {
+                showToast('에러가 발생했습니다');
+            }
+        };
+
+        confirmEmail();
+    }, [requestDto, showToast]);
+
+    useEffect(() => {
+        if (redirect) {
+            showToast("이메일 인증이 완료되었습니다. 로그인해주세요.")
+            navigate('/user/login');
+        }
+    }, [redirect, navigate]);
+
+    return null;
 };
 
 export default useAuthAPI;
