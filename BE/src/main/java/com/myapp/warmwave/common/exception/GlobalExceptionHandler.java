@@ -32,9 +32,7 @@ public class GlobalExceptionHandler {
 
             BindingResult bindingResult = e.getBindingResult();
 
-            bindingResult.getFieldErrors().forEach(fieldError -> {
-                errorMap.put(fieldError.getField(), fieldError.getCode());
-            });
+            bindingResult.getFieldErrors().forEach(fieldError -> errorMap.put(fieldError.getField(), fieldError.getCode()));
         }
 
         return ResponseEntity.badRequest().body(errorMap);
@@ -75,7 +73,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleCustomException(CustomException e) {
         // 해당 데이터가 존재하지 않는 경우의 예외 처리
 
-        log.error(e);
+        log.error(e.getExceptionCode());
 
         Map<String, String> errorMap = new HashMap<>();
 
