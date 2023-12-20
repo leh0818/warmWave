@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-import axios from "axios";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
 import jwtAxios from "../util/jwtUtil";
@@ -31,35 +30,19 @@ function ChatMain() {
 
   const stompRef = useRef(null);
 
-  const parseUserCookie = () => {
-    try {
-      const cookieValue = Cookies.get("user");
-      return cookieValue ? JSON.parse(decodeURIComponent(cookieValue)) : {};
-    } catch (error) {
-      console.error("Error parsing user cookie:", error);
-      return {};
-    }
-  };
+  const cookieValue = Cookies.get("user");
+  const userObject = JSON.parse(cookieValue);
+  const userId = userObject.id;
+  const userName = userObject.name;
 
   const subscribeToTopic = (id) => {
     if (stompClient) {
-      const userCookie = parseUserCookie();
-      const accessToken = userCookie.accessToken;
-
-      if (accessToken) {
-        const headers = {
-          Authorization: `Bearer ${accessToken}`,
-        };
-
-        stompClient.subscribe(
-          `/topic/messages/${id}`,
-          (message) => {
-            console.log(message.body);
-            const receivedMessage = JSON.parse(message.body);
-            setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-          },
-          headers
-        );
+      if (userId) {
+        stompClient.subscribe(`/topic/messages/${id}`, (message) => {
+          console.log(message.body);
+          const receivedMessage = JSON.parse(message.body);
+          setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+        });
 
         setSelectedConversationId(id);
       } else {
@@ -99,8 +82,13 @@ function ChatMain() {
   }, []);
 
   const handleConversationClick = (id) => {
+    // Set the selected conversation ID
+    setSelectedConversationId(id);
+
+    // Subscribe to the WebSocket topic for real-time updates
     subscribeToTopic(id);
 
+    // Fetch chat messages for the selected conversation
     jwtAxios
       .get(`http://localhost:8080/api/chatMessages/${id}`, {})
       .then((response) => {
@@ -110,35 +98,31 @@ function ChatMain() {
         console.error("Error fetching chat messages:", error);
       });
 
+    // If there is a message in the input, send it
     if (messageInputValue.trim() !== "") {
       sendMessage(id);
     }
   };
 
   const sendMessage = (id) => {
-    if (stompClient) {
-      const userCookie = parseUserCookie();
-      const accessToken = userCookie.accessToken;
+    if (stompClient && userId) {
+      const messageObject = {
+        roomId: id,
+        userId: userId,
+        sender: userName,
+        content: messageInputValue,
+      };
 
-      if (accessToken) {
-        const headers = {
-          Authorization: `Bearer ${accessToken}`,
-        };
+      // Send the message to the server
+      stompClient.send(`/app/chat/${id}`, {}, JSON.stringify(messageObject));
 
-        const messageObject = {
-          content: messageInputValue,
-          roomId: id,
-        };
-
-        stompClient.send(`/app/chat/${id}`, headers, JSON.stringify(messageObject));
-        setMessageInputValue("");
-      } else {
-        console.error("Access token not found or undefined in the user cookie.");
-      }
+      // Update the state only after the message has been sent
+      setMessageInputValue("");
     } else {
-      console.error("WebSocket connection not yet established.");
+      console.error("WebSocket connection not yet established or user ID is missing.");
     }
   };
+
   return (
     <div>
       <div
@@ -151,11 +135,17 @@ function ChatMain() {
           <Sidebar position="left" scrollable={false}>
             <Search placeholder="Search..." />
             <ConversationList>
-              {conversations.map((conversation) => (
-                <Conversation key={conversation.id} name={conversation.recipientName} onClick={() => handleConversationClick(conversation.id)}>
-                  <Avatar src={require("../../assets/images/p.png")} name="Lilly" status="available" />
-                </Conversation>
-              ))}
+              {conversations.map((conversation) => {
+                // Determine the name to display based on the condition
+                const displayUserName = userName !== conversation.donorName ? conversation.donorName : conversation.recipientName;
+
+                // Render Conversation with the determined displayUserName
+                return (
+                  <Conversation key={conversation.id} name={displayUserName} onClick={() => handleConversationClick(conversation.id)}>
+                    <Avatar src={require("../../assets/images/p.png")} name="Lilly" status="available" />
+                  </Conversation>
+                );
+              })}
             </ConversationList>
           </Sidebar>
 
@@ -165,12 +155,12 @@ function ChatMain() {
               {messages.map((msg, index) => (
                 <Message
                   key={msg.id}
-                  order={index}
+                  index={index}
                   model={{
                     message: msg.content,
                     sentTime: msg.timestamp,
                     sender: msg.sender,
-                    direction: msg.sender === "current_user" ? "outgoing" : "incoming",
+                    direction: msg.sender === userName ? "outgoing" : "incoming",
                     position: "single",
                   }}
                 >
@@ -185,5 +175,4 @@ function ChatMain() {
     </div>
   );
 }
-
 export default ChatMain;
