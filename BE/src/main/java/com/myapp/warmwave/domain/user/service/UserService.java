@@ -229,6 +229,10 @@ public class UserService {
 
         Address address = addressService.updateInstitutionAddress(dto, savedInstitution);
 
+        if (dto.getPassword() == null) {
+            savedInstitution.updateUserInfo(savedInstitution.getPassword(), address);
+        }
+
         savedInstitution.updateUserInfo(passwordEncoder.encode(dto.getPassword()), address);
 
         return userRepository.save(savedInstitution).getId();
@@ -245,6 +249,10 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("에러"));
 
         Address address = addressService.updateIndividualAddress(dto, savedIndividual);
+
+        if (dto.getPassword() == null) {
+            savedIndividual.updateIndiInfo(dto.getNickname(), savedIndividual.getPassword(), address);
+        }
 
         savedIndividual.updateIndiInfo(dto.getNickname(), passwordEncoder.encode(dto.getPassword()), address);
 
