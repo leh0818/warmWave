@@ -54,7 +54,7 @@ function Comment({ communityId }) {
   useEffect(() => {
     setPage(0);
     setComments([]);
-    fetchComments();
+    // fetchComments();
   }, [communityId]);
 
   const handleSubmitComment = async () => {
@@ -222,13 +222,12 @@ function Comment({ communityId }) {
                     style={{ flex: 1, border: '1px solid #E2E2E2', outline: 'none' }}
                   />
                 ) : (
-                  <p style={{ margin: '0', color: 'black' }}>{comment.contents}</p>
-                )}
+                  <p style={{ fontSize: '0.8rem', color: 'grey', margin: '0' }}>
+                    {formatCreatedAt(comment.createdAt)}
+                  </p>)}
               </div>
               <div className="date-and-buttons">
-                <p style={{ fontSize: '0.8rem', color: 'grey', margin: '0' }}>
-                  {formatCreatedAt(comment.createdAt)}
-                </p>
+                <p style={{ margin: '0', color: 'black' }}>{comment.contents}</p>
                 {loggedInUserId === comment.userId && (
                   <div className="comment-buttons">
                     {editingCommentId === comment.id ? (
