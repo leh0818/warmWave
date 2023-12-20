@@ -141,7 +141,7 @@ function ChatMain() {
 
                 // Render Conversation with the determined displayUserName
                 return (
-                  <Conversation key={conversation.id} name={displayUserName} onClick={() => handleConversationClick(conversation.id)}>
+                  <Conversation key={conversation.id} name={conversation.articleTitle} info={conversation.lastMessage} onClick={() => handleConversationClick(conversation.id)}>
                     <Avatar src={require("../../assets/images/p.png")} name="Lilly" status="available" />
                   </Conversation>
                 );
