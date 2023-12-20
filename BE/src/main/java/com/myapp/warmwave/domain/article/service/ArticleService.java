@@ -12,9 +12,9 @@ import com.myapp.warmwave.domain.article.repository.ArticleCategoryRepository;
 import com.myapp.warmwave.domain.article.repository.ArticleRepository;
 import com.myapp.warmwave.domain.category.entity.Category;
 import com.myapp.warmwave.domain.category.service.CategoryService;
-import com.myapp.warmwave.domain.image.entity.Image;
 import com.myapp.warmwave.domain.image.service.ImageService;
 import com.myapp.warmwave.domain.user.entity.User;
+import com.myapp.warmwave.domain.image.entity.Image;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.myapp.warmwave.common.exception.CustomExceptionCode.*;
-import static com.myapp.warmwave.common.util.Utils.userIp.getUserIP;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -68,7 +68,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public Article updateArticle(HttpServletRequest httpServletRequest, String userEmail, ArticlePatchDto dto) throws IOException {
+    public Article updateArticle(HttpServletRequest httpServletRequest, String userEmail, ArticlePatchDto dto) throws Exception {
 
         String userIp = getUserIP(httpServletRequest);
         Article findArticle = getArticleByArticleId(dto.getArticleId());
@@ -87,12 +87,17 @@ public class ArticleService {
             articleCategoryRepository.save(articleCategory);
         }
 
-        //추후 세터를 삭제하는 방향을 생각해보아야함
+        List<String> parsingOriginalUrls = new ArrayList<>();
+
+        for(String imageUrl : dto.getOriginalImageUrls()) {
+            parsingOriginalUrls.add(extractUrl(imageUrl));
+        }
+
         List<String> deleteImageUrls = findArticle.getArticleImages().stream()
                 .map(Image::getImgUrl)
-                .filter(url -> !dto.getOriginalImageUrls().contains(url))
                 .collect(Collectors.toList());
 
+        deleteImageUrls.removeAll(parsingOriginalUrls);
         imageService.deleteImagesByUrls(deleteImageUrls);
         findArticle.applyPatch(userIp, dto, articleCategoryRepository.findByArticleId(findArticle.getId()));
         findArticle.setArticleImages(imageService.uploadImages(findArticle, dto.getFiles()));
@@ -150,5 +155,24 @@ public class ArticleService {
     public Page<MainArticleDto> findTop5OrderByCreatedAt(int num) {
         Pageable pageable = PageRequest.of(num, 5);
         return articleRepository.findTop5OrderByCreatedAtDesc(pageable);
+    }
+
+    private String getUserIP(HttpServletRequest request) {
+        String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null) {
+            return request.getRemoteAddr();
+        }
+        return xfHeader.split(",")[0];
+    }
+
+    private static String extractUrl(String jsonString) throws Exception {
+        int startIndex = jsonString.indexOf("\"") + 1;
+        int endIndex = jsonString.lastIndexOf("\"");
+
+        if (startIndex > 0 && endIndex > startIndex) {
+            return jsonString.substring(startIndex, endIndex);
+        } else {
+            throw new CustomException(INVALID_IMAGE_URL);
+        }
     }
 }
