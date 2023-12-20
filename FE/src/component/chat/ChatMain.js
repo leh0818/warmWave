@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
-import jwtAxios from "../util/jwtUtil";
+import jwtAxios, { API_SERVER_HOST } from "../util/jwtUtil";
 import Cookies from "js-cookie";
 import {
   MainContainer,
@@ -53,7 +53,7 @@ function ChatMain() {
   useEffect(() => {
     // Fetch data using Axios when the component mounts
     jwtAxios
-      .get("http://localhost:8080/api/chatRoom", {})
+      .get(`${API_SERVER_HOST}/api/chatRoom`)
       .then((response) => {
         setConversations(response.data);
       })
@@ -63,7 +63,7 @@ function ChatMain() {
 
     // Connect to WebSocket if not already connected
     if (!stompRef.current) {
-      const socket = new SockJS("http://localhost:8080/ws");
+      const socket = new SockJS(`${API_SERVER_HOST}/ws`);
       const stomp = Stomp.over(socket);
 
       stomp.connect({}, () => {
@@ -90,7 +90,7 @@ function ChatMain() {
 
     // Fetch chat messages for the selected conversation
     jwtAxios
-      .get(`http://localhost:8080/api/chatMessages/${id}`, {})
+      .get(`${API_SERVER_HOST}/api/chatMessages/${id}`, {})
       .then((response) => {
         setMessages(response.data);
       })
@@ -164,7 +164,7 @@ function ChatMain() {
                     position: "single",
                   }}
                 >
-                  <Avatar src={require("../../assets/images/p.png")} name={msg.nickName} />
+                  {msg.sender !== userName && <Avatar src={require("../../assets/images/p.png")} name={msg.nickName} />}
                 </Message>
               ))}
             </MessageList>
