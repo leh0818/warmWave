@@ -137,10 +137,9 @@ public class UserService {
         Map<String, Object> cookieMap = new HashMap<>();
         cookieMap.put(ACCESS_TOKEN, accessToken);
         cookieMap.put(REFRESH_TOKEN, refreshToken);
-        long expiration = (60 * 60 * 24 * 7);
 
-        cookieManager.setCookie(response, cookieMap.get(ACCESS_TOKEN).toString(), ACCESS_TOKEN, expiration);
-        cookieManager.setCookie(response, cookieMap.get(REFRESH_TOKEN).toString(), REFRESH_TOKEN, expiration);
+        cookieManager.setCookie(response, cookieMap.get(ACCESS_TOKEN).toString(), ACCESS_TOKEN, jwtProvider.getAccessTokenExpirationPeriod());
+        cookieManager.setCookie(response, cookieMap.get(REFRESH_TOKEN).toString(), REFRESH_TOKEN, jwtProvider.getRefreshTokenExpirationPeriod());
 
         return new ResponseUserLoginDto(user.getId(), user.getEmail(), user.getName());
     }
