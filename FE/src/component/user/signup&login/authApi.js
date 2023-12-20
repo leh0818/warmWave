@@ -3,8 +3,7 @@ import useToast from '../../hooks/useToast';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-export const API_SERVER_HOST = 'http://localhost:8080';
-const host = API_SERVER_HOST;
+const host = process.env.REACT_APP_HOST;
 
 const instance = axios.create({
     baseURL: host
