@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from 'react-router-dom';
-import jwtAxios from '../../util/jwtUtil';
-import axios from 'axios'; // jwtAxios 대신에 axios를 사용
-
-
+import axios from 'axios';
+import { API_SERVER_HOST } from '../../util/jwtUtil';
 
 const ArticleList = () => {
   const formatDate = (dateString) => {
@@ -38,7 +36,7 @@ const ArticleList = () => {
     }
   };
 
-  const ProductCard = ({ articleId, title, articleType, images, writer, categories, postDate }) => {
+  const ProductCard = ({ articleId, title, articleType, images, address, writer, categories, postDate }) => {
     const imageUrl = images.length > 0 ? images[0].imgUrl : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg';
     const badgeStyle = getArticleTypeBadgeStyle(articleType);
 
@@ -66,7 +64,7 @@ const ArticleList = () => {
                 <span key={index} className="badge bg-secondary mx-1" style={{ backgroundColor: '#ffa500' }}>{category}</span>
               ))}
               <p className="mb-1" style={{ color: '#212529', marginBottom: '1px' }}><strong>게시일 :</strong> {formatDate(postDate)}</p>
-              <p className="mb-1" style={{ color: '#212529', marginBottom: '10px' }}><strong>기부지역 :</strong> 서울시 송파구 백제고분로 7777-77</p>
+              <p className="mb-1" style={{ color: '#212529', marginBottom: '10px' }}><strong>기부지역 :</strong> {address}</p>
             </div>
             <br />
           </div>
@@ -87,7 +85,7 @@ const ArticleList = () => {
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const response = await jwtAxios('http://localhost:8080/api/articles?page=1&size=10');
+          const response = await axios(`${API_SERVER_HOST}/api/articles?page=1&size=10`);
           const data = await response.data;
           setProducts(data.content);
         } catch (error) {
@@ -110,6 +108,7 @@ const ArticleList = () => {
                 title={product.title}
                 categories={product.prodCategories}
                 images={product.images}
+                address={product.address}
                 writer={product.writer}
                 tags={product.articleStatus}
                 postDate={product.createdAt}

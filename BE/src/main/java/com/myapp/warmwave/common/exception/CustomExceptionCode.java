@@ -12,6 +12,9 @@ public enum CustomExceptionCode {
      */
     NOT_MATCH_WRITER(HttpStatus.BAD_REQUEST, "작성자가 아닙니다."),
     ALREADY_LOGOUT_USER(HttpStatus.BAD_REQUEST, "다시 로그인해 주시기 바랍니다."),
+    IMAGE_AMOUNT_OVER(HttpStatus.BAD_REQUEST, "이미지 개수가가 허용된 크기를 초과했습니다.(최대 5개)"),
+    IMAGE_SIZE_OVER(HttpStatus.BAD_REQUEST, "이미지 크기가 허용된 크기를 초과했습니다.(개당 5mb 이하)"),
+    INVALID_IMAGE_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 이미지 url입니다."),
     /*
      * 401
      */
@@ -20,6 +23,7 @@ public enum CustomExceptionCode {
     UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED, "지원되지 않는 토큰입니다."),
     INVALID_JWT(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     ILLEGAL_ARGUMENT_JWT(HttpStatus.UNAUTHORIZED, "잘못된 토큰입니다."),
+    NEED_EMAIL_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "이메일 인증이 필요합니다."),
     /*
      * 403
      */

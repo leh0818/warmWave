@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import jwtAxios from '../../util/jwtUtil';
+import jwtAxios, { API_SERVER_HOST } from '../../util/jwtUtil';
+import axios from 'axios';
 import { getCookie } from '../../util/cookieUtil';
 
 const ArticleDetails = () => {
@@ -11,7 +12,7 @@ const ArticleDetails = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    jwtAxios.get(`http://localhost:8080/api/articles/${params.articleId}`)
+    axios.get(`${API_SERVER_HOST}/api/articles/${params.articleId}`)
       .then(response => {
         setArticle(response.data);
       })
@@ -69,11 +70,7 @@ const ArticleDetails = () => {
     const parsedToken = userToken ? JSON.parse(decodeURIComponent(userToken)) : null;
 
     try {
-      await jwtAxios.delete(`http://localhost:8080/api/articles/${params.articleId}`, {
-        headers: {
-          'Authorization': `Bearer ${parsedToken.accessToken}`,
-        },
-      });
+      await jwtAxios.delete(`${API_SERVER_HOST}/api/articles/${params.articleId}`);
 
       // 삭제 후 목록 페이지로 이동
       navigate('/donate');
@@ -195,7 +192,7 @@ const ArticleDetails = () => {
             <hr style={{ borderColor: '#212529', marginTop: '1rem', marginBottom: '1rem' }} />
             <div className="d-flex justify-content-between align-items-center mb-3">
               <p className="mb-4" style={{ fontSize: '20px', color: '#212529' }}>
-                <span className="me-2" style={{ fontSize: '19px', color: '#212529', fontWeight: 'normal' }}>기부지역 :</span> 서울시 송파구 백제고분로 777-7777
+                <span className="me-2" style={{ fontSize: '19px', color: '#212529', fontWeight: 'normal' }}>기부지역 :</span> {article?.address || '로딩 중...'}
               </p>
               <button
                 className="btn"

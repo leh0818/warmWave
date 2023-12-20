@@ -12,9 +12,10 @@ import com.myapp.warmwave.domain.article.repository.ArticleCategoryRepository;
 import com.myapp.warmwave.domain.article.repository.ArticleRepository;
 import com.myapp.warmwave.domain.category.entity.Category;
 import com.myapp.warmwave.domain.category.service.CategoryService;
-import com.myapp.warmwave.domain.image.entity.Image;
 import com.myapp.warmwave.domain.image.service.ImageService;
 import com.myapp.warmwave.domain.user.entity.User;
+import com.myapp.warmwave.domain.image.entity.Image;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,10 +45,11 @@ public class ArticleService {
     private final ArticleCategoryRepository articleCategoryRepository;
 
     @Transactional
-    public Article createArticle(ArticlePostDto dto, List<MultipartFile> imageFiles) throws IOException {
+    public Article createArticle(HttpServletRequest httpServletRequest, ArticlePostDto dto, List<MultipartFile> imageFiles) throws IOException {
 
+        String userIp = getUserIP(httpServletRequest);
         List<Category> categories = categoryService.getCategory(dto.getProdCategory());
-        Article article = articleMapper.articlePostDtoToArticle(dto);
+        Article article = articleMapper.articlePostDtoToArticle(userIp, dto);
 
         //추후 세터를 삭제하는 방향을 생각해보아야함
         // 로직에 fileName 필요 없음 -> fileName에 article 정보 저장하면 단방향 매핑 가능하지 않을까?
@@ -65,8 +68,9 @@ public class ArticleService {
     }
 
     @Transactional
-    public Article updateArticle(String userEmail, ArticlePatchDto dto) throws IOException {
+    public Article updateArticle(HttpServletRequest httpServletRequest, String userEmail, ArticlePatchDto dto) throws Exception {
 
+        String userIp = getUserIP(httpServletRequest);
         Article findArticle = getArticleByArticleId(dto.getArticleId());
         User user = findArticle.getUser();
 
@@ -83,15 +87,32 @@ public class ArticleService {
             articleCategoryRepository.save(articleCategory);
         }
 
-        //추후 세터를 삭제하는 방향을 생각해보아야함
+        List<String> parsingOriginalUrls = new ArrayList<>();
+
+        for(String imageUrl : dto.getOriginalImageUrls()) {
+            parsingOriginalUrls.add(extractUrl(imageUrl));
+        }
+
         List<String> deleteImageUrls = findArticle.getArticleImages().stream()
                 .map(Image::getImgUrl)
-                .filter(url -> !dto.getOriginalImageUrls().contains(url))
                 .collect(Collectors.toList());
 
+        deleteImageUrls.removeAll(parsingOriginalUrls);
         imageService.deleteImagesByUrls(deleteImageUrls);
-        findArticle.applyPatch(dto, articleCategoryRepository.findByArticleId(findArticle.getId()));
+        findArticle.applyPatch(userIp, dto, articleCategoryRepository.findByArticleId(findArticle.getId()));
         findArticle.setArticleImages(imageService.uploadImages(findArticle, dto.getFiles()));
+
+        return articleRepository.save(findArticle);
+    }
+
+    public Article updateArticleStatus(Long articleId, String userEmail, String articleStatus) {
+        Article findArticle = getArticleByArticleId(articleId);
+        User user = findArticle.getUser();
+
+        if (!user.getEmail().equals(userEmail))
+            throw new CustomException(USER_ROLE_NOT_EXIST);
+
+        findArticle.setArticleStatusByString(articleStatus);
 
         return articleRepository.save(findArticle);
     }
@@ -134,5 +155,24 @@ public class ArticleService {
     public Page<MainArticleDto> findTop5OrderByCreatedAt(int num) {
         Pageable pageable = PageRequest.of(num, 5);
         return articleRepository.findTop5OrderByCreatedAtDesc(pageable);
+    }
+
+    private String getUserIP(HttpServletRequest request) {
+        String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null) {
+            return request.getRemoteAddr();
+        }
+        return xfHeader.split(",")[0];
+    }
+
+    private static String extractUrl(String jsonString) throws Exception {
+        int startIndex = jsonString.indexOf("\"") + 1;
+        int endIndex = jsonString.lastIndexOf("\"");
+
+        if (startIndex > 0 && endIndex > startIndex) {
+            return jsonString.substring(startIndex, endIndex);
+        } else {
+            throw new CustomException(INVALID_IMAGE_URL);
+        }
     }
 }
