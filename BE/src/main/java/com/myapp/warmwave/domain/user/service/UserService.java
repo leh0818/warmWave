@@ -18,7 +18,6 @@ import com.myapp.warmwave.domain.user.repository.IndividualRepository;
 import com.myapp.warmwave.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
