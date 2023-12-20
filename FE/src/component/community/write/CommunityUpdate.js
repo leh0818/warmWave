@@ -144,8 +144,6 @@ const CommunityUpdate = () => {
   return (
     <section className="community-list-page-section" id="contact">
       <div className="container" style={{ maxWidth: '900px' }}>
-        <h1>수정</h1>
-
         <form onSubmit={handleSubmit}>
           <div className="row gx-4 gx-lg-5 align-items-center" style={{ border: '2px solid #E2E2E2' }}>
             <div className='community-contents'>
