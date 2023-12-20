@@ -1,9 +1,21 @@
-function ShowIndivInfo(props) {
-  const { name, email, address } = props.userInfo
+import { useEffect, useState } from "react";
+import CheckPasswordModal from "./passwordModal/checkPasswordModal";
 
-  const goToEditPage = () => {
-    props.sendDataToParent('edit');
+function ShowIndivInfo(props) {
+  const userInfo = props.userInfo;
+  const { name, email, address } = userInfo;
+  const [checkModalShow, setCheckModalShow] = useState(false);
+  const [isPassed, setIsPassed] = useState(false);
+
+  const handleCheckModalShow = async () => {
+    setCheckModalShow(true);
   }
+
+  useEffect(() => {
+    if (isPassed) {
+      props.sendDataToParent('edit');
+    }
+  }, [isPassed]);
 
   return (
     <div className="col-md-8 mt-5">
@@ -38,11 +50,12 @@ function ShowIndivInfo(props) {
           <hr />
           <div className="row">
             <div className="col-sm-12">
-              <button className="btn btn-info" onClick={goToEditPage}>정보수정</button>
+              <button className="btn btn-info" onClick={handleCheckModalShow}>정보수정</button>
             </div>
           </div>
         </div>
       </div>
+      <CheckPasswordModal userInfo={userInfo} show={checkModalShow} setShow={setCheckModalShow} passwordCheckResult={setIsPassed} />
     </div>
   )
 }
