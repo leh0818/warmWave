@@ -229,6 +229,17 @@ public class UserService {
         return userRepository.save(savedIndividual).getId();
     }
 
+    @Transactional
+    public Long updatePassword(String password, Long userId) {
+        User savedUser = userRepository.findById(userId)
+                .map(Individual.class::cast)
+                .orElseThrow(() -> new IllegalArgumentException("에러"));
+
+        savedUser.updateUserInfo(passwordEncoder.encode(password), savedUser.getAddress());
+
+        return userRepository.save(savedUser).getId();
+    }
+
     // 기관 가입 승인
     @Transactional
     public void changeStatus(Long userId) {

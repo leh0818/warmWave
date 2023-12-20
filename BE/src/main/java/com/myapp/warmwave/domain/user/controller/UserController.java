@@ -97,6 +97,9 @@ public class UserController {
             @PathVariable("userId") Long userId,
             @RequestBody RequestInstitutionUpdateDto dto
     ) {
+        if(dto.getPassword() != null) {
+            return ResponseEntity.ok(userService.updatePassword(dto.getPassword(), userId));
+        }
         return ResponseEntity.ok(userService.updateInstInfo(dto, userId));
     }
 
@@ -106,6 +109,9 @@ public class UserController {
             @PathVariable("userId") Long userId,
             @RequestBody RequestIndividualUpdateDto dto
     ) {
+        if(dto.getPassword() != null) {
+            return ResponseEntity.ok(userService.updatePassword(dto.getPassword(), userId));
+        }
         return ResponseEntity.ok(userService.updateIndiInfo(dto, userId));
     }
 
