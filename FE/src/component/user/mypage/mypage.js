@@ -5,8 +5,7 @@ import MyArticleList from "./myArticleList";
 import FavoriteInstList from "./favoriteInstList";
 import MyChatRoom from "./myChatRoom";
 import { getCookie } from '../../util/cookieUtil';
-import jwtAxios from '../../util/jwtUtil';
-export const API_SERVER_HOST = 'http://localhost:8080'
+import jwtAxios, { API_SERVER_HOST } from '../../util/jwtUtil';
 
 function MyPage() {
   const [currentPage, setCurrentPage] = useState('myInfo');
