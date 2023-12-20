@@ -94,11 +94,11 @@ const CommunityUpdate = () => {
       alert('카테고리를 선택해주세요.');
       return;
     }
-    if(!(title.length >= 5 && title.length <=1000)){
+    if (!(title.length >= 5 && title.length <= 1000)) {
       alert('제목을 5글자 이상 50글자 이하로 입력해주세요.');
       return;
     }
-    if(!(contents.length >= 10 && contents.length <=1000)){
+    if (!(contents.length >= 10 && contents.length <= 1000)) {
       alert('내용을 10글자 이상 1000글자 이하로 입력해주세요.');
       return;
     }
@@ -135,6 +135,12 @@ const CommunityUpdate = () => {
     }
   };
 
+  const handleRemoveImage = () => {
+    setImage([]);
+    setPreviewImage(null); // 미리보기 이미지 제거
+    // 필요한 경우 추가적인 상태 업데이트
+  };
+
   return (
     <section className="community-list-page-section" id="contact">
       <div className="container" style={{ maxWidth: '900px' }}>
@@ -159,7 +165,7 @@ const CommunityUpdate = () => {
                 </div>
               </div>
               <div classnames="community-body">
-                <div className="col-md-12" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '402px', marginTop: '30px', marginBottom: '30px' }}>
+                <div className="col-md-12" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '402px', marginTop: '30px', marginBottom: '30px', position: 'relative' }}>
                   <img
                     src={previewImage || (community?.images && community.images.length > 0 ? community.images[0] : '/images/community_default.PNG')}
                     // previewImage
@@ -172,6 +178,26 @@ const CommunityUpdate = () => {
                     }}
                     onClick={handleImageClick}
                   />
+                  {previewImage && (
+                    <button
+                      onClick={handleRemoveImage}
+                      style={{
+                        // position: 'absolute',
+                        // top: '5px', // 버튼의 상단 위치 조정
+                        // right: '5px', // 버튼의 우측 위치 조정
+                        border: 'grey',
+                        background: 'rgba(255, 255, 255, 0.7)', // 배경 색상과 투명도 추가
+                        marginTop: '10px', // 버튼과 이미지 사이의 간격
+                        color: 'grey',
+                        fontSize: '0.8rem',
+                        cursor: 'pointer',
+                        padding: '2px 5px', // 패딩 추가
+                        borderRadius: '50%', // 원형 버튼으로 디자인
+                        zIndex: 2 // z-index 추가
+                      }}>
+                      삭제
+                    </button>
+                  )}
                   <input
                     type='file'
                     id='imageUpload'
@@ -200,36 +226,36 @@ const CommunityUpdate = () => {
                       {cat}
                     </span>
                   ))}
-                  </div>
-                  <div className="form-floating mb-3" style={{ marginTop: '20px' }}>
-                    <textarea
-                      className="form-control"
-                      id="content"
-                      placeholder="글 내용을 입력해주세요"
-                      value={contents}
-                      onChange={handleContentsChange}
-                      style={{ height: '10rem' }}
-                    ></textarea>
-                    <label className="form-label" style={{ color: 'dimgray' }}>내용</label>
-                  </div>
+                </div>
+                <div className="form-floating mb-3" style={{ marginTop: '20px' }}>
+                  <textarea
+                    className="form-control"
+                    id="content"
+                    placeholder="글 내용을 입력해주세요"
+                    value={contents}
+                    onChange={handleContentsChange}
+                    style={{ height: '10rem' }}
+                  ></textarea>
+                  <label className="form-label" style={{ color: 'dimgray' }}>내용</label>
                 </div>
               </div>
             </div>
-            <div className="d-flex justify-content-end" style={{ marginTop: '20px', marginBottom: '10px' }}>
-              <Link to={`/community/${params.communityId}`}>
-                <button
-                  className="btn btn-primary btn-xl"
-                  style={{ backgroundColor: '#FABA96', borderColor: '#FABA96', marginRight: '10px' }}>
-                  취소하기
-                </button>
-              </Link>
+          </div>
+          <div className="d-flex justify-content-end" style={{ marginTop: '20px', marginBottom: '10px' }}>
+            <Link to={`/community/${params.communityId}`}>
               <button
                 className="btn btn-primary btn-xl"
-                onClick={handleSubmit}
-                style={{ backgroundColor: '#FABA96', borderColor: '#FABA96' }}>
-                저장하기
+                style={{ backgroundColor: '#FABA96', borderColor: '#FABA96', marginRight: '10px' }}>
+                취소하기
               </button>
-            </div>
+            </Link>
+            <button
+              className="btn btn-primary btn-xl"
+              onClick={handleSubmit}
+              style={{ backgroundColor: '#FABA96', borderColor: '#FABA96' }}>
+              저장하기
+            </button>
+          </div>
         </form>
       </div>
 

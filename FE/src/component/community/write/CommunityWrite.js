@@ -44,6 +44,12 @@ const CommunityWrite = () => {
     }
   };
 
+  const handleRemoveImage = () => {
+    setImages([]);
+    setPreviewImage(null); // 미리보기 이미지 제거
+    // 필요한 경우 추가적인 상태 업데이트
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -59,11 +65,11 @@ const CommunityWrite = () => {
       alert('카테고리를 선택해주세요.');
       return;
     }
-    if(!(title.length >= 5 && title.length <=1000)){
+    if (!(title.length >= 5 && title.length <= 1000)) {
       alert('제목을 5글자 이상 50글자 이하로 입력해주세요.');
       return;
     }
-    if(!(content.length >= 10 && content.length <=1000)){
+    if (!(content.length >= 10 && content.length <= 1000)) {
       alert('내용을 10글자 이상 1000글자 이하로 입력해주세요.');
       return;
     }
@@ -123,7 +129,7 @@ const CommunityWrite = () => {
                 </div>
               </div>
               <div classnames="community-body">
-                <div className="col-md-12" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '402px', marginTop: '30px', marginBottom: '30px' }}>
+                <div className="col-md-12" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '402px', marginTop: '30px', marginBottom: '30px', position: 'relative' }}>
                   <img
                     src={previewImage || '/images/community_default.PNG'} // 미리보기 이미지 또는 기본 이미지
                     alt='사진 등록하기'
@@ -135,6 +141,26 @@ const CommunityWrite = () => {
                     }}
                     onClick={handleImageClick}
                   />
+                  {previewImage && (
+                    <button
+                      onClick={handleRemoveImage}
+                      style={{
+                        // position: 'absolute',
+                        // top: '5px', // 버튼의 상단 위치 조정
+                        // right: '5px', // 버튼의 우측 위치 조정
+                        border: 'grey',
+                        background: 'rgba(255, 255, 255, 0.7)', // 배경 색상과 투명도 추가
+                        marginTop: '10px', // 버튼과 이미지 사이의 간격
+                        color: 'grey',
+                        fontSize: '0.8rem',
+                        cursor: 'pointer',
+                        padding: '2px 5px', // 패딩 추가
+                        borderRadius: '50%', // 원형 버튼으로 디자인
+                        zIndex: 2 // z-index 추가
+                      }}>
+                      삭제
+                    </button>
+                  )}
                   <input
                     type='file'
                     id='imageUpload'
