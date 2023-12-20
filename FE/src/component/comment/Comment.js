@@ -62,6 +62,10 @@ function Comment({ communityId }) {
       alert("댓글을 입력해주세요.");
       return;
     }
+    if(!(newComment.length >= 5 && newComment.length <=1000)){
+      alert('댓글을 10글자 이상 1000글자 이하로 입력해주세요.');
+      return;
+    }
     try {
       const commentData = {
         contents: newComment

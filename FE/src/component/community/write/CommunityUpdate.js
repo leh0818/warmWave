@@ -82,6 +82,27 @@ const CommunityUpdate = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (!title.trim()) {
+      alert('제목을 입력해주세요.');
+      return;
+    }
+    if (!contents.trim()) {
+      alert('내용을 입력해주세요.');
+      return;
+    }
+    if (!category.trim()) {
+      alert('카테고리를 선택해주세요.');
+      return;
+    }
+    if(!(title.length >= 5 && title.length <=1000)){
+      alert('제목을 5글자 이상 50글자 이하로 입력해주세요.');
+      return;
+    }
+    if(!(contents.length >= 10 && contents.length <=1000)){
+      alert('내용을 10글자 이상 1000글자 이하로 입력해주세요.');
+      return;
+    }
+
     try {
       const formData = new FormData();
 
@@ -98,6 +119,17 @@ const CommunityUpdate = () => {
       const data = await response.data; // response.data는 java 객체
       console.log('Server response:', data);
       navigate(`/community/${data.id}`);
+
+      localStorage.removeItem('postTitle');
+      localStorage.removeItem('postContent');
+      localStorage.removeItem('postCategory');
+
+      setTitle('');
+      setContents('');
+      setCategory('');
+      setImage([]);
+      setPreviewImage(null);
+
     } catch (error) {
       console.error('Error submitting form:', error);
     }
