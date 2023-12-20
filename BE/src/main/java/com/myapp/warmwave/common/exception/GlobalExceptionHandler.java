@@ -73,7 +73,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleCustomException(CustomException e) {
         // 해당 데이터가 존재하지 않는 경우의 예외 처리
 
-        log.error(e.getExceptionCode());
+        log.error(e.getStackTrace()[0].getClassName() + "." + e.getStackTrace()[0].getMethodName());
+        log.error("Exception code: " + e.getExceptionCode());
 
         Map<String, String> errorMap = new HashMap<>();
 
