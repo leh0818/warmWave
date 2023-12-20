@@ -5,6 +5,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import Cookies from 'js-cookie';
 import { getCookie } from '../../util/cookieUtil';
 import jwtAxios from '../../util/jwtUtil';
+import { CommunityCategoryStyles } from '../CommunityCategoryStyles';
 
 const CommunityUpdate = () => {
   const navigate = useNavigate();
@@ -63,13 +64,13 @@ const CommunityUpdate = () => {
   };
 
   const handleImageChange = (event) => {
-          // 깃허브Url 등록 -> 이미지 바꿨지만 url 삭제 안 되는 중
+    // 깃허브Url 등록 -> 이미지 바꿨지만 url 삭제 안 되는 중
     const newImage = event.target.files[0];
     if (newImage) {
       setImage(newImage);
       setChangedFields({ ...changedFields, images: true });
-  
-          // 이미지 미리보기 생성
+
+      // 이미지 미리보기 생성
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result);
@@ -151,51 +152,52 @@ const CommunityUpdate = () => {
                   {['봉사인증', '봉사모집', '잡다구리'].map((cat) => (
                     <span
                       key={cat}
-                      className={`badge m-1 ${cat === category ? 'selected-badge' : 'unselected-badge'}`}
-                      onClick={handleCategoryChange}
+                      onClick={() => setCategory(cat)}
                       style={{
+                        ...CommunityCategoryStyles[cat],
                         cursor: 'pointer',
-                        border: `1px solid #FABA96`,
-                        color: cat === category ? 'white' : '#FABA96',
-                        backgroundColor: cat === category ? '#FABA96' : 'white',
                         padding: '0.5em 0.8em',
                         fontSize: '1rem',
-                        borderRadius: '0.25rem'
+                        borderRadius: '0.25rem',
+                        margin: '0 0.5em',
+                        border: `1px solid ${CommunityCategoryStyles[cat].backgroundColor}`,
+                        color: cat === category ? 'white' : CommunityCategoryStyles[cat].backgroundColor,
+                        backgroundColor: cat === category ? CommunityCategoryStyles[cat].backgroundColor : 'white'
                       }}
                     >
                       {cat}
                     </span>
                   ))}
-                </div>
-                <div className="form-floating mb-3" style={{ marginTop: '20px' }}>
-                  <textarea
-                    className="form-control"
-                    id="content"
-                    placeholder="글 내용을 입력해주세요"
-                    value={contents}
-                    onChange={handleContentsChange}
-                    style={{ height: '10rem' }}
-                  ></textarea>
-                  <label className="form-label" style={{ color: 'dimgray' }}>내용</label>
+                  </div>
+                  <div className="form-floating mb-3" style={{ marginTop: '20px' }}>
+                    <textarea
+                      className="form-control"
+                      id="content"
+                      placeholder="글 내용을 입력해주세요"
+                      value={contents}
+                      onChange={handleContentsChange}
+                      style={{ height: '10rem' }}
+                    ></textarea>
+                    <label className="form-label" style={{ color: 'dimgray' }}>내용</label>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="d-flex justify-content-end" style={{ marginTop: '20px', marginBottom: '10px' }}>
-            <Link to={`/community/${params.communityId}`}>
+            <div className="d-flex justify-content-end" style={{ marginTop: '20px', marginBottom: '10px' }}>
+              <Link to={`/community/${params.communityId}`}>
+                <button
+                  className="btn btn-primary btn-xl"
+                  style={{ backgroundColor: '#FABA96', borderColor: '#FABA96', marginRight: '10px' }}>
+                  취소하기
+                </button>
+              </Link>
               <button
                 className="btn btn-primary btn-xl"
-                style={{ backgroundColor: '#FABA96', borderColor: '#FABA96', marginRight: '10px' }}>
-                취소하기
+                onClick={handleSubmit}
+                style={{ backgroundColor: '#FABA96', borderColor: '#FABA96' }}>
+                저장하기
               </button>
-            </Link>
-            <button
-              className="btn btn-primary btn-xl"
-              onClick={handleSubmit}
-              style={{ backgroundColor: '#FABA96', borderColor: '#FABA96' }}>
-              저장하기
-            </button>
-          </div>
+            </div>
         </form>
       </div>
 

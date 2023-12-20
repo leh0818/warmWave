@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import { CommunityCategoryStyles } from '../CommunityCategoryStyles';
 import jwtAxios from "../../util/jwtUtil";
 import { API_SERVER_HOST } from "../../util/jwtUtil";
 
@@ -58,11 +59,11 @@ const CommunityWrite = () => {
       });
 
       const response = await jwtAxios.post(`${API_SERVER_HOST}/api/communities`, formData);
-  
+
       console.log('Server response:', response);
       const data = response.data;
       navigate(`/community/${data.id}`);
-      
+
     } catch (error) {
       console.error('Error submitting form:', error);
     }
@@ -116,16 +117,17 @@ const CommunityWrite = () => {
                   {['봉사인증', '봉사모집', '잡다구리'].map((cat) => (
                     <span
                       key={cat}
-                      className={`badge m-1 ${cat === category ? 'selected-badge' : 'unselected-badge'}`}
                       onClick={() => setCategory(cat)}
                       style={{
+                        ...CommunityCategoryStyles[cat],
                         cursor: 'pointer',
-                        border: `1px solid #FABA96`,
-                        color: cat === category ? 'white' : '#FABA96',
-                        backgroundColor: cat === category ? '#FABA96' : 'white',
-                        padding: '0.5em 0.8em', // 세로 및 가로 패딩 조정
-                        fontSize: '1rem', // 글씨 크기 조정
-                        borderRadius: '0.25rem' // 둥근 모서리 조정
+                        padding: '0.5em 0.8em',
+                        fontSize: '1rem',
+                        borderRadius: '0.25rem',
+                        margin: '0 0.5em',
+                        border: `1px solid ${CommunityCategoryStyles[cat].backgroundColor}`,
+                        color: cat === category ? 'white' : CommunityCategoryStyles[cat].backgroundColor,
+                        backgroundColor: cat === category ? CommunityCategoryStyles[cat].backgroundColor : 'white'
                       }}
                     >
                       {cat}
