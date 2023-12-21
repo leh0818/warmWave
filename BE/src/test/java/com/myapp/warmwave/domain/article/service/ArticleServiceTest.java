@@ -150,11 +150,11 @@ class ArticleServiceTest {
         String title = savedArticle.getTitle();
 
         when(articleRepository.findById(any())).thenReturn(Optional.of(articleIndiv));
-        List<String> urls = Collections.singletonList("[]");
 
+        List<String> imageUrlList = Collections.singletonList("[]");
 
         ArticlePatchDto updateDto = ArticlePatchDto.builder()
-                .title("제목1 변경").content("내용2").prodCategory("카테고리2").originalImageUrls(urls).build();
+                .title("제목1 변경").content("내용2").prodCategory("카테고리2").originalImageUrls(imageUrlList).build();
 
         savedArticle.applyPatch("", updateDto, List.of(articleCategory));
         String userEmail = "test@gmail.com";
