@@ -18,7 +18,7 @@ function MyChatRoom() {
               <tr>
                 <th scope="col" style={{ textAlign: "center" }}>번호</th>
                 <th scope="col" style={{ textAlign: "center" }}>채팅방</th>
-                <td></td>
+                <th></th>
               </tr>
             </thead>
             <tbody>

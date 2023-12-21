@@ -13,7 +13,7 @@ function FavoriteInstList() {
               <tr>
                 <th scope="col" style={{ textAlign: "center" }}>번호</th>
                 <th scope="col" style={{ textAlign: "center" }}>기관이름</th>
-                <td></td>
+                <th></th>
               </tr>
             </thead>
             <tbody>
