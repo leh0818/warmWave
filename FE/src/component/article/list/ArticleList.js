@@ -10,6 +10,45 @@ const ArticleList = () => {
     return new Date(dateString).toLocaleDateString('ko-KR', options);
   };
 
+  const StatusBox = ({ status }) => {
+    const getStatusStyle = (status) => {
+      switch (status) {
+        case '진행중':
+          return { backgroundColor: '#cd5c5c', color: '#ffffff' };
+        case '기본':
+          return { backgroundColor: '#cd5c5c', color: '#ffffff' };
+        case '완료':
+          return { backgroundColor: '#cd5c5c', color: '#ffffff' };
+        default:
+          return { backgroundColor: '#cd5c5c', color: '#ffffff' };
+      }
+    };
+
+    const getStatusText = (status) => {
+      switch (status) {
+        case '진행중':
+          return '기부진행';
+        case '기본':
+          return '기부대기';
+        case '완료':
+          return '기부완료';
+        default:
+          return status;
+      }
+    };
+
+    const statusStyle = getStatusStyle(status);
+    const statusText = getStatusText(status);
+
+    return (
+      <div className="badge position-absolute" style={{ top: '0.3rem', left: '0.3rem', padding: '0.5rem', ...statusStyle }}>
+          {statusText}
+      </div>
+    );
+
+  };
+
+
   const getArticleTypeText = (type) => {
     switch (type) {
       case 'DONATION':
@@ -36,13 +75,13 @@ const ArticleList = () => {
     }
   };
 
-  const ProductCard = ({ articleId, title, articleType, images, address, writer, categories, postDate }) => {
-    const imageUrl = images.length > 0 ? images[0].imgUrl : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg';
+  const ProductCard = ({ articleId, title, articleType, images, address, writer, categories, postDate, articleStatus }) => {
+    const imageUrl = images.length > 0 ? images[0].imgUrl : 'https://warmwave-bucket.s3.ap-northeast-2.amazonaws.com/common/%E1%84%83%E1%85%B3%E1%86%BC%E1%84%85%E1%85%A9%E1%86%A8%E1%84%83%E1%85%AC%E1%86%AB+%E1%84%8B%E1%85%B5%E1%84%86%E1%85%B5%E1%84%8C%E1%85%B5%E1%84%80%E1%85%A1+%E1%84%8B%E1%85%A5%E1%86%B9%E1%84%89%E1%85%B3%E1%86%B8%E1%84%82%E1%85%B5%E1%84%83%E1%85%A1.jpg';
     const badgeStyle = getArticleTypeBadgeStyle(articleType);
 
     return (
       <div className="col mb-4">
-        <div className="card h-100" style={{ width: '105%'}}>
+        <div className="card h-100" style={{ width: '105%' }}>
           <img
             className="card-img-top"
             src={imageUrl}
@@ -54,7 +93,9 @@ const ArticleList = () => {
               <div className="badge position-absolute" style={{ top: '0.3rem', right: '0.3rem', padding: '0.5rem', ...badgeStyle }}>
                 {getArticleTypeText(articleType)}
               </div>
-              <h5 className="fw-bolder mb-1 text-center" style={{ color: '#212529', marginBottom: '10px' }}>
+              <StatusBox status={articleStatus} />
+
+              <h5 className="fw-bolder mb-1 text-center" style={{ color: '#000000', marginBottom: '10px' }}>
                 <Link to={`/donate/${articleId}`}>{title}</Link>
               </h5>
               <hr className="my-1" />
@@ -110,7 +151,7 @@ const ArticleList = () => {
                 images={product.images}
                 address={product.address}
                 writer={product.writer}
-                tags={product.articleStatus}
+                articleStatus={product.articleStatus}
                 postDate={product.createdAt}
               />
             ))}

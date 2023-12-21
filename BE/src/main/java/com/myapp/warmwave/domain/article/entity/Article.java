@@ -34,8 +34,7 @@ public class Article extends BaseEntity {
 
     //게시글 상태(기본, 진행중, 완료)
     @Enumerated(EnumType.STRING)
-    @Builder.Default
-    private Status articleStatus = Status.DEFAULT;
+    private Status articleStatus;
 
     private String userIp;
 

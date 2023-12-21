@@ -56,7 +56,7 @@ public class CommunityController {
 
     @GetMapping("/{communityId}")
     public ResponseEntity<CommunityResponseDto> getCommunity(@PathVariable("communityId") Long communityId) {
-        return new ResponseEntity<>(communityFacadeService.getCommunity(communityId), HttpStatus.OK);
+        return new ResponseEntity<>(communityService.getCommunity(communityId), HttpStatus.OK);
     }
     @GetMapping("")
     public ResponseEntity<Page<CommunityListResponseDto>> getCommunities(@RequestParam(required = false, defaultValue = "recent") String sort,

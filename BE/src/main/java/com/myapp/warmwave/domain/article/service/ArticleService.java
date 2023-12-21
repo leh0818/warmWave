@@ -89,28 +89,28 @@ public class ArticleService {
 
         List<String> parsingOriginalUrls = new ArrayList<>();
 
-        for (String imageUrl : dto.getOriginalImageUrls()) {
-            parsingOriginalUrls.add(extractUrl(imageUrl));
+        if (!dto.getOriginalImageUrls().get(0).equals("[]")){
+            for(String imageUrl : dto.getOriginalImageUrls()) {
+                parsingOriginalUrls.add(extractUrl(imageUrl));
+
+            List<String> deleteImageUrls = findArticle.getArticleImages().stream()
+                    .map(Image::getImgUrl)
+                    .collect(Collectors.toList());
+
+            deleteImageUrls.removeAll(parsingOriginalUrls);
+            imageService.deleteImagesByUrls(deleteImageUrls);
+            }
         }
 
-        List<String> deleteImageUrls = findArticle.getArticleImages().stream()
-                .map(Image::getImgUrl)
-                .collect(Collectors.toList());
-
-        deleteImageUrls.removeAll(parsingOriginalUrls);
-        imageService.deleteImagesByUrls(deleteImageUrls);
         findArticle.applyPatch(userIp, dto, articleCategoryRepository.findByArticleId(findArticle.getId()));
         findArticle.setArticleImages(imageService.uploadImages(findArticle, dto.getFiles()));
 
         return articleRepository.save(findArticle);
     }
 
+    @Transactional
     public Article updateArticleStatus(Long articleId, String userEmail, String articleStatus) {
         Article findArticle = getArticleByArticleId(articleId);
-        User user = findArticle.getUser();
-
-        if (!user.getEmail().equals(userEmail))
-            throw new CustomException(USER_ROLE_NOT_EXIST);
 
         findArticle.setArticleStatusByString(articleStatus);
 
