@@ -102,7 +102,7 @@ function MyPage() {
                 <div className="d-flex flex-column align-items-center text-center">
                   <div className="mt-3">
                     <h4>{userInfo.name}</h4>
-                    <p className="text-secondary mb-1">기타 사용자 설명</p>
+                    <p className="text-secondary mb-1">{userInfo.email}</p>
                     <p className="text-muted font-size-sm">{userInfo.address}</p>
                   </div>
                 </div>
