@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getCookie } from '../../util/cookieUtil';
 import Comment from './../../comment/Comment';
 import jwtAxios from "../../util/jwtUtil"
+import axios from "axios";
 import { API_SERVER_HOST } from "../../util/jwtUtil"
 import { CommunityCategoryStyles } from '../CommunityCategoryStyles';
 
@@ -13,7 +14,7 @@ function CommunityDetails() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    jwtAxios.get(`${API_SERVER_HOST}/api/communities/${params.communityId}`)
+    axios.get(`${API_SERVER_HOST}/api/communities/${params.communityId}`)
       .then(response => {
         setCommunity(response.data);
       })
@@ -51,7 +52,8 @@ function CommunityDetails() {
     : '로딩 중...';
 
   return (
-    <section className="community-list-page-section" id="contact">
+    <section style={{ padding: '0rem 0' }} id="contact">
+    {/* <section className="community-list-page-section" id="contact"> */}
       {/* 페이지 사이즈 */}
       <div className="container" style={{ maxWidth: '900px', border: '1px solid #E2E2E2', padding: '23px' }}>
         {/* 게시글 테두리 씹힘*/}

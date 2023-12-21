@@ -49,7 +49,7 @@ const loginSlice = createSlice({    // 로그인 상태
 
             //정상적인 로그인시에만 저장
             if (!payload.error) {
-                setCookie("user", JSON.stringify(payload), 7) //7일
+                setCookie("user", JSON.stringify(payload), 1) //1일
             }
 
             return payload
@@ -60,6 +60,8 @@ const loginSlice = createSlice({    // 로그인 상태
             })
             .addCase(loginPostAsync.rejected, (state, action) => {
                 console.log("rejected")
+                const errorMessage = action.error?.message || '로그인에 실패했습니다.';
+                return { ...state, error: errorMessage };
             })
     }
 })

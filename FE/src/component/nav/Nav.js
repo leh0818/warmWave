@@ -1,7 +1,7 @@
 import {Link, NavLink, Outlet, useNavigate} from "react-router-dom";
 import {useSelector, useDispatch} from "react-redux";
 import { logout } from "../slices/loginSlice";
-import useToast from '../hooks/useToast';
+import useToast from "../hooks/useToast";
 
 function Nav() {
     const { showToast } = useToast();
@@ -44,6 +44,7 @@ function Nav() {
                                         <>
                                             <li><NavLink to="/chat">Chat</NavLink></li>
                                             <li><NavLink to="/" onClick={handleLogout}>Logout</NavLink></li>
+                                            <li><NavLink to="/user/me">My</NavLink></li>
                                         </>
                                     }
                                 </ul>

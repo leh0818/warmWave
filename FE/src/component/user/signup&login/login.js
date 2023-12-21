@@ -52,7 +52,8 @@ function Login() {
 
                 if (data.error) {
                     showToast("이메일과 패스워드를 다시 확인하세요", 'warning')
-                } else {
+                }
+                else {
                     showToast("로그인 성공", 'success')
                     moveToPath("/") // 뒤로 가기 했을 때 로그인 화면을 볼 수 없도록
                 }
@@ -207,11 +208,12 @@ function Login() {
 const SSocialBox = styled.div`
   display: flex;
   flex-flow: row nowrap;
-  justify-content: space-between;
+  justify-content: center;
   width: 80%;
   margin-left: auto;  
   margin-right: auto;
   margin-top: 30px;
+  gap: 50px;
 `;
 
 const NaverImg = styled.img.attrs({
