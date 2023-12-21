@@ -5,9 +5,9 @@ import EditInstInfo from './editInstInfo';
 import EditIndivInfo from './editIndivInfo';
 
 function MyInfo(props) {
-  //status: 게시글이 정보 보여주기 상태인지 수정 가능 상태인지
   const userInfo = props.userInfo
   const { userType } = userInfo
+  //status: 게시글이 정보 보여주기 상태인지 수정 가능 상태인지를 저장
   const [status, setStatus] = useState('show');
 
   if (!userInfo) {
