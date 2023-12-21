@@ -68,7 +68,7 @@ function EditIndivInfo(props) {
               <h6 className="mb-0">이메일</h6>
             </div>
             <div className="d-flex col-sm-9 align-items-center">
-              <input className='form-control form-control-sm' type='text' defaultValue={email} />
+              <input disabled className='form-control form-control-sm' type='text' defaultValue={email} />
             </div>
           </div>
           <div className="row flex-nowrap">
