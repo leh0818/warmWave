@@ -90,7 +90,6 @@ const ArticleList = () => {
           />
           <div className="card-body p-4 mb-2" style={{ height: '250px' }}>
             <div className="text-left">
-              {/* articleType 위치 수정 */}
               <div className="badge position-absolute" style={{ top: '0.3rem', right: '0.3rem', padding: '0.5rem', ...badgeStyle }}>
                 {getArticleTypeText(articleType)}
               </div>
@@ -109,8 +108,6 @@ const ArticleList = () => {
               <p className="mb-1" style={{ color: '#212529', marginBottom: '10px' }}><strong>기부지역 :</strong> {address}</p>
             </div>
             <br />
-            <StatusBox status={articleStatus} />
-
           </div>
         </div>
         <div className="card-footer p-4 border-top-0 bg-transparent">
@@ -121,7 +118,6 @@ const ArticleList = () => {
         </div>
       </div>
     );
-
   };
 
   const ArticleList = () => {
