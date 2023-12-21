@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Axios from "axios";
 
+export const host = process.env.REACT_APP_HOST;
+
 function MiddleBar() {
     const [indivCount, setIndivCount] = useState(null);
     const [instCount, setInstCount] = useState(null);
@@ -9,7 +11,7 @@ function MiddleBar() {
 
     useEffect(() => {
         // 서버에서 데이터를 받아오는 API 엔드포인트에 대한 URL을 적절히 변경
-        Axios.get('/api/main/count')
+        Axios.get(`${host}/api/main/count`)
             .then(response => {
                 const data = response.data;
                 setIndivCount(data.indivCount);

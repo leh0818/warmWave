@@ -2,7 +2,9 @@ import KakaoMap from "../../kakaomap/KakaoMap";
 import Inst from "../institution/Inst";
 import InstDefault from "../institution/InstDefault";
 import { useEffect, useState } from "react";
-import Axios from "axios";
+import jwtAxios from "../../../util/jwtUtil.js"
+
+export const host = process.env.REACT_APP_HOST;
 
 function Middle() {
     const [hasData, setHasData] = useState(false);
@@ -10,12 +12,7 @@ function Middle() {
 
     const fetchData = async () => {
         try {
-            const response = await Axios.get('/api/users/adjacent', {
-                headers: {
-                    // 여기는 토큰 어떻게 받아와야 할지 생각하고 수정해야할듯합니다.
-                    // 'Authorization' : 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImJvZHkiOnsiZW1haWwiOiJ0ZXN0MDRAZ21haWwuY29tIn0sImV4cCI6MTcwMTcwNDI1NX0.HUoJuRZPgwA1SAYy-5kpM0_Vz_LSFEwg9lWsS6ecB13BYzcj1RrQcBkB_hDJR6I3PHusamA3LDalos_KWdjYCA'
-                }
-            });
+            const response = await jwtAxios.get(`${host}/api/users/adjacent`);
 
             const fetchedData = response.data;
 

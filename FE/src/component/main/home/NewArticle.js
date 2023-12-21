@@ -3,13 +3,15 @@ import Axios from "axios";
 import Top5Articles from "./articles/Top5Articles";
 import Top5ArticlesDefault from "./articles/Top5ArticlesDefault";
 
+export const host = process.env.REACT_APP_HOST;
+
 function MiddleArticle() {
     const [hasData, setHasData] = useState(false);
     const [articleList, setArticleList] = useState(null);
 
     const fetchData = async () => {
         try {
-            const response = await Axios.get('/api/articles/today');
+            const response = await Axios.get(`${host}/api/articles/today`);
             const fetchedData = response.data;
 
             if (fetchedData.content.length > 0) {
