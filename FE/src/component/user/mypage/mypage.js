@@ -9,7 +9,6 @@ import jwtAxios, { API_SERVER_HOST } from '../../util/jwtUtil';
 
 function MyPage() {
   const [currentPage, setCurrentPage] = useState('myInfo');
-  const [userType, setUserType] = useState();
   const [userInfo, setUserInfo] = useState();
   const [updateIndicator, setUpdateIndicator] = useState(false);
   const userId = getCookie('user').id;
@@ -87,7 +86,7 @@ function MyPage() {
       case 'favoriteInstList':
         return <FavoriteInstList />;
       case 'myChatRoom':
-        return <MyChatRoom />
+        return <MyChatRoom userInfo={userInfo} />
       default:
         return <div>Loading...</div>
     }
