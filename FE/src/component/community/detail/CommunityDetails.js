@@ -12,14 +12,23 @@ function CommunityDetails() {
   const [community, setCommunity] = useState(null);
   const params = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log("API 호출");
+
+    if (loading) return;
+
+    setLoading(true);
     axios.get(`${API_SERVER_HOST}/api/communities/${params.communityId}`)
       .then(response => {
         setCommunity(response.data);
       })
       .catch(error => {
         console.error('Error fetching community:', error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [params.communityId]);
 

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.myapp.warmwave.common.exception.CustomExceptionCode.NOT_FOUND_ARTICLE;
 import static com.myapp.warmwave.common.exception.CustomExceptionCode.NOT_MATCH_WRITER;
 import static com.myapp.warmwave.common.util.Utils.userIp.getUserIP;
 
@@ -40,26 +41,25 @@ public class CommunityService {
         return communityRepository.save(community);
     }
 
-    public Community getCommunity(Long communityId) {
-        return communityRepository.findById(communityId)
+    @Transactional
+    public CommunityResponseDto getCommunity(Long communityId) {
+        Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new CustomException(CustomExceptionCode.NOT_FOUND_ARTICLE));
+        community.setHit(community.getHit()+1);
+        communityRepository.save(community);
+        return communityMapper.communityToCommunityResponseDto(community);
     }
 
     public Page<CommunityListResponseDto> getAllCommunities(Pageable pageable, String sort) {
         return communityRepository.findAllCommunities(pageable, sort);
     }
 
-//    JPA
-//    @Transactional
-//    public Page<Community> getAllCommunities(Pageable pageable) {
-//        return communityRepository.findAll(pageable);
-//    }
-
     @Transactional
     public CommunityResponseDto updateCommunity(Long communityId, CommunityPatchDto dto, List<MultipartFile> images, String userEmail, HttpServletRequest request) throws IOException {
         System.out.println("images(service) : " + images); // null
 
-        Community originCommunity = getCommunity(communityId);
+        Community originCommunity = communityRepository.findById(communityId)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_ARTICLE));
 
         if(!originCommunity.getUser().getEmail().equals(userEmail)) {
             throw new CustomException(NOT_MATCH_WRITER);
@@ -80,17 +80,9 @@ public class CommunityService {
 
     @Transactional
     public void deleteCommunity(Long communityId) {
-        communityRepository.delete(getCommunity(communityId));
+        communityRepository.deleteById(communityId);
 
         if(communityRepository.existsById(communityId))
             throw new CustomException(CustomExceptionCode.FAILED_TO_REMOVE);
     }
-
-    private List<String> filterImageUrls(List<String> originUrls, List<String> updatedUrls) {
-        // 원래 이미지 url 배열에서 -> dto 이미지 url 배열과 일치하지 않는 것들을 필터링
-        return originUrls.stream()
-                .filter(originUrl -> updatedUrls.stream().noneMatch(updatedUrl -> updatedUrl.equals(originUrl)))
-                .collect(Collectors.toList());
-    }
-
 }

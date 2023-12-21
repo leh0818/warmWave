@@ -29,7 +29,6 @@ public class CommunityFacadeService {
     private final CommunityMapper communityMapper;
     private final UserRepository<User> userRepository;
 
-    // refactor : return Entity 말고 DTO로!
     @Transactional
     public CommunityResponseDto createCommunity(CommunityPostDto dto, List<MultipartFile> images, String userEmail, HttpServletRequest request) throws IOException {
         // refactor : 파라미터 dto -> 매핑 로직이 facade 따위에 의존함 + setter
@@ -42,9 +41,9 @@ public class CommunityFacadeService {
         return communityMapper.communityToCommunityResponseDto(createdCommunity);
     }
 
-    public CommunityResponseDto getCommunity(Long communityId) {
-        return communityMapper.communityToCommunityResponseDto(communityService.getCommunity(communityId));
-    }
+//    public CommunityResponseDto getCommunity(Long communityId) {
+//        return communityMapper.communityToCommunityResponseDto(communityService.getCommunity(communityId));
+//    }
 
     @Transactional
     public void deleteCommunity(Long communityId) {
