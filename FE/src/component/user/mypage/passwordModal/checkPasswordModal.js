@@ -45,7 +45,7 @@ function CheckPasswordModal(props) {
         centered
       >
         <Modal.Header closeButton>
-          <div>비밀번호를 입력해주세요</div>
+          <h6>비밀번호를 입력해주세요</h6>
         </Modal.Header>
         <Modal.Body>
           <input autoFocus type="password" id="password" />

@@ -46,17 +46,17 @@ function ChangePasswordModal(props) {
       centered
     >
       <Modal.Header closeButton>
-        <div>비밀번호를 입력해주세요</div>
+        <h6>비밀번호를 입력해주세요</h6>
       </Modal.Header>
       <Modal.Body>
         <table>
           <tbody>
             <tr>
-              <td><label htmlFor="password1">새 비밀번호</label></td>
+              <td><h6>새 비밀번호</h6></td>
               <td><input type="password" id="password1" /></td>
             </tr>
             <tr>
-              <td><label htmlFor="password2">비밀번호 확인</label></td>
+              <td><h6>비밀번호 확인</h6></td>
               <td><input type="password" id="password2" /></td>
             </tr>
           </tbody>
