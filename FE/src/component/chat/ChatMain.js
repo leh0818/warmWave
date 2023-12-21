@@ -25,72 +25,78 @@ function ChatMain() {
   const [messageInputValue, setMessageInputValue] = useState("");
   const [conversations, setConversations] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [stompClient, setStompClient] = useState(null);
-  const [selectedConversationId, setSelectedConversationId] = useState(null);
-
-  const stompRef = useRef(null);
-
+  const socket = useRef(null);
+  const stompClient = useRef(null);
+  const [selectedConversation, setSelectedConversation] = useState({});
+  const [articleId, setArticleId] = useState([]);
   const cookieValue = Cookies.get("user");
   const userObject = JSON.parse(cookieValue);
   const userId = userObject.id;
   const userName = userObject.name;
 
-  const subscribeToTopic = (id) => {
-    if (stompClient) {
+  const connectToWebSocket = () => {
+    if (!stompClient.current) {
+      socket.current = new SockJS(`${API_SERVER_HOST}/ws`);
+      stompClient.current = Stomp.over(socket.current);
+
+      stompClient.current.connect({}, () => {
+        // 연결 후 추가 로직이 필요한 경우에 추가합니다.
+      });
+    }
+  };
+
+  const subscribeToTopic = (id, articleId) => {
+    if (stompClient.current) {
       if (userId) {
-        stompClient.subscribe(`/topic/messages/${id}`, (message) => {
+        stompClient.current.subscribe(`/topic/messages/${id}`, (message) => {
           console.log(message.body);
           const receivedMessage = JSON.parse(message.body);
           setMessages((prevMessages) => [...prevMessages, receivedMessage]);
         });
 
-        setSelectedConversationId(id);
+        // Update selectedConversation with both id and articleId
+        setSelectedConversation({ ...selectedConversation, id, articleId });
       } else {
         console.error("Access token not found or undefined in the user cookie.");
       }
     }
   };
+
   useEffect(() => {
-    // Fetch data using Axios when the component mounts
+    // Axios를 사용하여 데이터를 가져옵니다.
     jwtAxios
       .get(`${API_SERVER_HOST}/api/chatRoom`)
       .then((response) => {
         setConversations(response.data);
+        setArticleId(response.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
 
-    // Connect to WebSocket if not already connected
-    if (!stompRef.current) {
-      const socket = new SockJS(`${API_SERVER_HOST}/ws`);
-      const stomp = Stomp.over(socket);
-
-      stomp.connect({}, () => {
-        setStompClient(stomp);
-      });
-
-      stompRef.current = stomp; // Store the stomp instance in the ref
-    }
+    // WebSocket에 연결합니다.
+    connectToWebSocket();
 
     return () => {
-      // Disconnect on unmount
-      if (stompRef.current && stompRef.current.connected) {
-        stompRef.current.disconnect();
+      // 언마운트 시 연결을 끊습니다.
+      if (stompClient.current && stompClient.current.connected) {
+        stompClient.current.disconnect();
       }
     };
   }, []);
 
-  const handleConversationClick = (id) => {
-    // Set the selected conversation ID
-    setSelectedConversationId(id);
+  const handleConversationClick = (conversation) => {
+    if (conversation.id === selectedConversation.id) {
+      return; // 이미 선택된 채팅방인 경우 처리 중단
+    }
 
-    // Subscribe to the WebSocket topic for real-time updates
-    subscribeToTopic(id);
+    setSelectedConversation(conversation);
 
-    // Fetch chat messages for the selected conversation
+    // Pass the articleId to subscribeToTopic function
+    subscribeToTopic(conversation.id, conversation.articleId);
+
     jwtAxios
-      .get(`${API_SERVER_HOST}/api/chatMessages/${id}`, {})
+      .get(`${API_SERVER_HOST}/api/chatMessages/${conversation.id}`, {})
       .then((response) => {
         setMessages(response.data);
       })
@@ -98,14 +104,12 @@ function ChatMain() {
         console.error("Error fetching chat messages:", error);
       });
 
-    // If there is a message in the input, send it
     if (messageInputValue.trim() !== "") {
-      sendMessage(id);
+      sendMessage(conversation.id);
     }
   };
-
   const sendMessage = (id) => {
-    if (stompClient && userId) {
+    if (stompClient.current && userId) {
       const messageObject = {
         roomId: id,
         userId: userId,
@@ -113,13 +117,29 @@ function ChatMain() {
         content: messageInputValue,
       };
 
-      // Send the message to the server
-      stompClient.send(`/app/chat/${id}`, {}, JSON.stringify(messageObject));
+      stompClient.current.send(`/app/chat/${id}`, {}, JSON.stringify(messageObject));
 
-      // Update the state only after the message has been sent
       setMessageInputValue("");
     } else {
       console.error("WebSocket connection not yet established or user ID is missing.");
+    }
+  };
+
+  const handleArticleStatusButtonClick = async (articleStatus, articleId) => {
+    try {
+      console.log("Sending request with payload:", { articleStatus, articleId });
+
+      if (articleId) {
+        const response = await jwtAxios.put(`${API_SERVER_HOST}/api/articles/status/${articleId}?articleStatus=${articleStatus}`, {
+          articleStatus: articleStatus,
+        });
+
+        console.log("API Response:", response.data);
+      } else {
+        console.error("No conversationId available.");
+      }
+    } catch (error) {
+      console.error("API Error:", error);
     }
   };
 
@@ -127,7 +147,7 @@ function ChatMain() {
     <div>
       <div
         style={{
-          height: "600px",
+          height: "650px",
           position: "relative",
         }}
       >
@@ -135,17 +155,11 @@ function ChatMain() {
           <Sidebar position="left" scrollable={false}>
             <Search placeholder="Search..." />
             <ConversationList>
-              {conversations.map((conversation) => {
-                // Determine the name to display based on the condition
-                const displayUserName = userName !== conversation.donorName ? conversation.donorName : conversation.recipientName;
-
-                // Render Conversation with the determined displayUserName
-                return (
-                  <Conversation key={conversation.id} name={conversation.articleTitle} info={conversation.lastMessage} onClick={() => handleConversationClick(conversation.id)}>
-                    <Avatar src={require("../../assets/images/p.png")} name="Lilly" status="available" />
-                  </Conversation>
-                );
-              })}
+              {conversations.map((conversation) => (
+                <Conversation key={conversation.id} name={conversation.articleTitle} info={conversation.lastMessage} onClick={() => handleConversationClick(conversation)}>
+                  <Avatar src={require("../../assets/images/p.png")} name="Lilly" status="available" />
+                </Conversation>
+              ))}
             </ConversationList>
           </Sidebar>
 
@@ -164,15 +178,48 @@ function ChatMain() {
                     position: "single",
                   }}
                 >
-                  {msg.sender !== userName && <Avatar src={require("../../assets/images/p.png")} name={msg.nickName} />}
+                  {msg.sender !== userName && <Avatar src={require("../../assets/images/p.png")} name={msg.sender} />}
                 </Message>
               ))}
+              <div>
+                <button
+                  className="btn btn-secondary me-2"
+                  type="button"
+                  onClick={() => handleArticleStatusButtonClick("완료", selectedConversation.articleId)}
+                  style={{
+                    backgroundColor: "#ffffff",
+                    borderColor: "#999999",
+                    color: "#999999",
+                  }}
+                >
+                  기부완료
+                </button>
+                <button
+                  className="btn btn-secondary me-2"
+                  type="button"
+                  onClick={() => handleArticleStatusButtonClick("기본", selectedConversation.articleId)}
+                  style={{
+                    backgroundColor: "#ffffff",
+                    borderColor: "#999999",
+                    color: "#999999",
+                  }}
+                >
+                  기부중단
+                </button>
+              </div>
             </MessageList>
-            <MessageInput placeholder="Type message here" value={messageInputValue} onChange={(val) => setMessageInputValue(val)} onSend={() => sendMessage(selectedConversationId)} />
+
+            <MessageInput
+              placeholder="Type message here"
+              value={messageInputValue}
+              onChange={(val) => setMessageInputValue(val)}
+              onSend={() => selectedConversation?.id && sendMessage(selectedConversation.id)}
+            />
           </ChatContainer>
         </MainContainer>
       </div>
     </div>
   );
 }
+
 export default ChatMain;
