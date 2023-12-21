@@ -1,9 +1,23 @@
-function ShowInstInfo(props) {
-  const { name, email, address } = props.userInfo
+import { useEffect, useState } from "react";
+import useToast from "../../hooks/useToast";
+import CheckPasswordModal from "./passwordModal/checkPasswordModal";
 
-  const goToEditPage = () => {
-    props.sendDataToParent('edit');
+function ShowInstInfo(props) {
+  const userInfo = props.userInfo;
+  const { name, email, address } = userInfo;
+  const [checkModalShow, setCheckModalShow] = useState(false);
+  const [isPassed, setIsPassed] = useState(false);
+  const { showToast } = useToast();
+
+  const handleCheckModalShow = async () => {
+    setCheckModalShow(true);
   }
+
+  useEffect(() => {
+    if (isPassed) {
+      props.sendDataToParent('edit');
+    }
+  }, [isPassed]);
 
   return (
     <div className="col-md-8 mt-5">
@@ -38,11 +52,12 @@ function ShowInstInfo(props) {
           <hr />
           <div className="row">
             <div className="col-sm-12">
-              <button className="btn btn-info" onClick={goToEditPage}>비밀번호 변경</button>
+              <button className="btn btn-info" onClick={handleCheckModalShow}>비밀번호 변경</button>
             </div>
           </div>
         </div>
       </div>
+      <CheckPasswordModal userInfo={userInfo} show={checkModalShow} setShow={setCheckModalShow} passwordCheckResult={setIsPassed} />
     </div>
   );
 }
