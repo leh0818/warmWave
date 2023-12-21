@@ -58,6 +58,7 @@ public class EmailService {
             message.setSubject("WarmWave 회원가입 이메일 인증");
 
             String text = "WarmWave 가입해 주셔서 감사합니다. 아래 링크를 클릭해서 이메일 주소를 인증하세요\n\n";
+            // Todo : 배포 후에 링크 주소 http://warmwave.kro.kr 로 변경하기
             text += "http://localhost:8080/api/users/confirm-email?email=" + email + "&authToken=" + authToken;
             message.setText(text);
 
