@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import jwtAxios, { API_SERVER_HOST } from '../../util/jwtUtil';
 
-function MyChatRoom() {
+function MyChatRoom(props) {
   const [chatRoomList, setChatRoomList] = useState([]);
+  const { userId } = props.userInfo;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await jwtAxios.get(`${API_SERVER_HOST}/api/chatRoom/${userId}?page=1&size=10`)
+        console.log('Response:', response); // Log the entire response
+        console.log('Content:', response.data.content);
+        setChatRoomList(prevState => [...(response.data.content || [])]);
+        console.log('Articles:', chatRoomList || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+  }, [])
 
   return (
     <div className="col-md-8 mt-5">
@@ -23,18 +39,9 @@ function MyChatRoom() {
             </thead>
             <tbody>
               <tr>
-                <th style={{ textAlign: "center", verticalAlign: "middle" }} scope="row">1</th>
-                <td style={{ verticalAlign: "middle" }}>'~~~~' 게시글의 채팅방</td>
-                <td style={{ textAlign: "center" }}>
-                  <button className='btn btn-danger'>나가기</button>
-                </td>
-              </tr>
-              <tr>
-                <th style={{ textAlign: "center", verticalAlign: "middle" }} scope="row">2</th>
-                <td style={{ verticalAlign: "middle" }}>'~~~~' 게시글의 채팅방</td>
-                <td style={{ textAlign: "center" }}>
-                  <button className='btn btn-danger'>나가기</button>
-                </td>
+                <td></td>
+                <td><h1>To be updated...</h1></td>
+                <td></td>
               </tr>
             </tbody>
           </table>

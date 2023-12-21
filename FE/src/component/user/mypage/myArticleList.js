@@ -9,11 +9,7 @@ function MyArticleList(props) {
     const fetchData = async () => {
       try {
         const response = await jwtAxios.get(`${API_SERVER_HOST}/api/articles/${userId}/all?page=1&size=10`)
-        const data = await response.data
-        console.log(data)
-        setArticleList(data.content);
-        console.log('article list')
-        console.log(articleList)
+        setArticleList(prevState => [...(response.data.content || [])]);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -40,7 +36,12 @@ function MyArticleList(props) {
               </tr>
             </thead>
             <tbody>
-              {articleList.map(article => {
+              <tr>
+                <td></td>
+                <td><h1>To be updated...</h1></td>
+                <td></td>
+              </tr>
+              {/* {articleList.map(article => {
                 <tr key={article.id}>
                   <th style={{ textAlign: "center", verticalAlign: "middle" }} scope="row">{article.articleId}</th>
                   <td style={{ verticalAlign: "middle" }}>{article.title}</td>
@@ -48,7 +49,7 @@ function MyArticleList(props) {
                     <button className='btn btn-danger'>삭제</button>
                   </td>
                 </tr>
-              })}
+              })} */}
             </tbody>
           </table>
         </div>
