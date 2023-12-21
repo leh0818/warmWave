@@ -159,7 +159,9 @@ const ArticleDetails = () => {
               </div>
             ) : (
               <div className="image-container" style={{ height: "400px", width: "100%", backgroundColor: "#f0f0f0", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <img className="card-img-top mb-5 mb-md-0" src="https://dummyimage.com/600x700/dee2e6/6c757d.jpg" alt="true" style={{ height: "100%", objectFit: "contain", border: "1px solid #ddd" }} />
+                  <img className="card-img-top mb-5 mb-md-0" 
+                  src="https://warmwave-bucket.s3.ap-northeast-2.amazonaws.com/common/%E1%84%83%E1%85%B3%E1%86%BC%E1%84%85%E1%85%A9%E1%86%A8%E1%84%83%E1%85%AC%E1%86%AB+%E1%84%8B%E1%85%B5%E1%84%86%E1%85%B5%E1%84%8C%E1%85%B5%E1%84%80%E1%85%A1+%E1%84%8B%E1%85%A5%E1%86%B9%E1%84%89%E1%85%B3%E1%86%B8%E1%84%82%E1%85%B5%E1%84%83%E1%85%A1.jpg" 
+                  alt="true" style={{ height: "100%", objectFit: "contain", border: "1px solid #ddd" }} />
               </div>
             )}
           </div>

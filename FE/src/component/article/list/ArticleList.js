@@ -37,7 +37,7 @@ const ArticleList = () => {
   };
 
   const ProductCard = ({ articleId, title, articleType, images, address, writer, categories, postDate }) => {
-    const imageUrl = images.length > 0 ? images[0].imgUrl : 'https://dummyimage.com/450x300/dee2e6/6c757d.jpg';
+    const imageUrl = images.length > 0 ? images[0].imgUrl : 'https://warmwave-bucket.s3.ap-northeast-2.amazonaws.com/common/%E1%84%83%E1%85%B3%E1%86%BC%E1%84%85%E1%85%A9%E1%86%A8%E1%84%83%E1%85%AC%E1%86%AB+%E1%84%8B%E1%85%B5%E1%84%86%E1%85%B5%E1%84%8C%E1%85%B5%E1%84%80%E1%85%A1+%E1%84%8B%E1%85%A5%E1%86%B9%E1%84%89%E1%85%B3%E1%86%B8%E1%84%82%E1%85%B5%E1%84%83%E1%85%A1.jpg';
     const badgeStyle = getArticleTypeBadgeStyle(articleType);
 
     return (
