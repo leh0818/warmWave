@@ -71,6 +71,8 @@ public class ImageService {
     }
 
     private static void validateImageFiles(List<MultipartFile> imageFiles) {
+        if (imageFiles == null) return;
+
         if (imageFiles.size() > maxFileAmount) {
           throw  new CustomException(IMAGE_AMOUNT_OVER);
         }
