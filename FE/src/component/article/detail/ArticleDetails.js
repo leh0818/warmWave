@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
-import jwtAxios, { API_SERVER_HOST } from "../../util/jwtUtil";
-import axios from "axios";
-import { getCookie } from "../../util/cookieUtil";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import jwtAxios, { API_SERVER_HOST } from '../../util/jwtUtil';
+import axios from 'axios';
+import { getCookie } from '../../util/cookieUtil';
+import { Carousel } from 'react-bootstrap';
+import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
+
 
 const ArticleDetails = () => {
   const [article, setArticle] = useState(null);
@@ -28,12 +33,12 @@ const ArticleDetails = () => {
 
   const formattedDate = article?.createdAt
     ? new Date(article.createdAt)
-        .toLocaleDateString("ko-KR", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })
-        .replace(/ /g, "")
+      .toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+      .replace(/ /g, "")
     : "로딩 중...";
 
   const getArticleTypeText = (type) => {
@@ -116,15 +121,50 @@ const ArticleDetails = () => {
     <section className="py-5">
       <div className="container px-4 px-lg-5 my-5">
         <div className="row gx-4 gx-lg-5 align-items-start">
+
           <div className="col-md-6" style={{ padding: "15px" }}>
             {showImages && article?.images && article.images.length > 0 ? (
-              article.images.map((image) => (
-                <img key={image.id} className="card-img-top mb-5 mb-md-0" src={image.imgUrl} alt={image.imgName} style={{ maxHeight: "400px", width: "100%", objectFit: "contain" }} />
-              ))
+              <div id="carouselExample" className="carousel slide" data-bs-ride="carousel">
+                <div className="carousel-inner">
+                  {article.images.map((image, index) => (
+                    <div key={image.id} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
+                      <div className="image-container" style={{ height: "400px", width: "100%", margin: "auto", backgroundColor: "#f0f0f0", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <img className="d-block w-100" src={image.imgUrl} alt={image.imgName} style={{ height: "100%", objectFit: "contain", border: "1px solid #ddd" }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="carousel-indicators" style={{ position: 'static', marginBottom: '10px' }}>
+                  {article.images.map((_, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      data-bs-target="#carouselExample"
+                      data-bs-slide-to={index}
+                      className={index === 0 ? 'active' : ''}
+                      aria-current={index === 0 ? 'true' : 'false'}
+                      aria-label={`Slide ${index + 1}`}
+                      style={{ backgroundColor: "#333" }}
+                    ></button>
+                  ))}
+                </div>
+                <button className="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                  <span className="carousel-control-prev-icon" aria-hidden="true" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}></span>
+                  <span className="visually-hidden">Previous</span>
+                </button>
+                <button className="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                  <span className="carousel-control-next-icon" aria-hidden="true" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}></span>
+                  <span className="visually-hidden">Next</span>
+                </button>
+              </div>
             ) : (
-              <img className="card-img-top mb-5 mb-md-0" src="https://dummyimage.com/600x700/dee2e6/6c757d.jpg" alt="true" style={{ maxHeight: "400px", width: "100%", objectFit: "contain" }} />
+              <div className="image-container" style={{ height: "400px", width: "100%", backgroundColor: "#f0f0f0", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <img className="card-img-top mb-5 mb-md-0" src="https://dummyimage.com/600x700/dee2e6/6c757d.jpg" alt="true" style={{ height: "100%", objectFit: "contain", border: "1px solid #ddd" }} />
+              </div>
             )}
           </div>
+
+
           <div className="col-md-6">
             <div className="d-flex align-items-start mb-1" style={{ flexDirection: "column" }}>
               <div className="d-flex align-items-center">
