@@ -15,6 +15,7 @@ function MyInfo(props) {
   }
 
   const switchPage = status => {
+    props.reRender(true);
     setStatus(status);
   }
 

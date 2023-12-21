@@ -11,25 +11,30 @@ function MyPage() {
   const [currentPage, setCurrentPage] = useState('myInfo');
   const [userType, setUserType] = useState();
   const [userInfo, setUserInfo] = useState();
+  const [updateIndicator, setUpdateIndicator] = useState(false);
   const userId = getCookie('user').id;
 
   useEffect(() => {
-    jwtAxios.get(`${API_SERVER_HOST}/api/users/${userId}`)
-      .then(response => {
-        const responseData = response.data;
-        const currentUserType = responseData.role.toLowerCase();
-        setUserType(currentUserType);
-        if (userType !== null) {
+    if (updateIndicator) {
+      setUpdateIndicator(prev => !prev);
+    }
+    const fetchData = async () => {
+      await jwtAxios.get(`${API_SERVER_HOST}/api/users/${userId}`)
+        .then(response => {
+          const responseData = response.data;
+          const currentUserType = responseData.role.toLowerCase();
           setUserInfo({
             userId: userId,
             userType: currentUserType,
             name: responseData.name,
             email: responseData.email,
             address: responseData.fullAddr
-          });
-        }
-      });
-  }, [userId]);
+          })
+        });
+    }
+
+    fetchData();
+  }, [updateIndicator]);
 
   if (!userInfo) {
     return <div>Loading...</div>
@@ -76,7 +81,7 @@ function MyPage() {
   const renderPage = () => {
     switch (currentPage) {
       case 'myInfo':
-        return <MyInfo userInfo={userInfo} />
+        return <MyInfo userInfo={userInfo} reRender={setUpdateIndicator} />
       case 'myArticleList':
         return <MyArticleList userInfo={userInfo} />;
       case 'favoriteInstList':
