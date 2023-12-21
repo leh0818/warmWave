@@ -14,10 +14,7 @@ function EditIndivInfo(props) {
   }
 
   const handleSaveChangedInfo = () => {
-    setEditData(prevData => ({
-      ...prevData,
-      additionalProperty: { nickname: document.querySelector("#nickname").value }
-    }));
+    editData.nickname = document.querySelector("#nickname").value;
 
     jwtAxios.put(`${API_SERVER_HOST}/api/users/${userId}/${userType}`, editData)
       .then(res => {
@@ -39,6 +36,7 @@ function EditIndivInfo(props) {
     const fullAddress = address.provinceAddress + address.cityAddress + address.townAddress;
 
     setEditData({
+      nickname: '',
       sdName: sidoAddress,
       sggName: sigunguAddress,
       details: detailAddress,
