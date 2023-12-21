@@ -78,7 +78,7 @@ function MyPage() {
       case 'myInfo':
         return <MyInfo userInfo={userInfo} />
       case 'myArticleList':
-        return <MyArticleList />;
+        return <MyArticleList userInfo={userInfo} />;
       case 'favoriteInstList':
         return <FavoriteInstList />;
       case 'myChatRoom':
