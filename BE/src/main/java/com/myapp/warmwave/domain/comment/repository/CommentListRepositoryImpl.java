@@ -44,7 +44,7 @@ public class CommentListRepositoryImpl implements CommentListRepository {
                                 comment.contents,
                                 comment.createdAt,
                                 comment.modifiedAt,
-                                community.user.id,
+                                comment.user.id,
                                 comment.community.id)
                 )
                 .from(comment)
@@ -57,11 +57,11 @@ public class CommentListRepositoryImpl implements CommentListRepository {
 
         List<CommentResponseDto> result = new ArrayList<>();
         for (CommentProjectionDto projection : projections) {
-            CacheUserDto userCacheDTO = userRepository.findById(projection.getId())
+            CacheUserDto userCacheDTO = userRepository.findById(projection.getUserId())
                     .map(usr1 -> new CacheUserDto(usr1.getId(), usr1.getName()))
                     .orElseThrow(() -> new CustomException(CustomExceptionCode.NOT_FOUND_USER));
 
-            String writer = userCacheDTO.getName();
+            String writer = userCacheDTO.getName(); // 모든 사람이 은호다
             result.add(new CommentResponseDto(
                     projection.getId(),
                     projection.getContents(),

@@ -66,7 +66,7 @@ public class CommunityListRepositoryImpl implements CommunityListRepository {
 
         List<CommunityListResponseDto> result = new ArrayList<>();
         for (CommunityListProjectionDto projection : projections) {
-            CacheUserDto userCacheDTO = userRepository.findById(projection.getId())
+            CacheUserDto userCacheDTO = userRepository.findById(projection.getUserId())
                     .map(usr1 -> new CacheUserDto(usr1.getId(), usr1.getName()))
                     .orElseThrow(() -> new CustomException(CustomExceptionCode.NOT_FOUND_USER));
 
