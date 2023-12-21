@@ -76,7 +76,7 @@ function MyPage() {
   const renderPage = () => {
     switch (currentPage) {
       case 'myInfo':
-        return <MyInfo userType={userType} userInfo={userInfo} />
+        return <MyInfo userInfo={userInfo} />
       case 'myArticleList':
         return <MyArticleList />;
       case 'favoriteInstList':
