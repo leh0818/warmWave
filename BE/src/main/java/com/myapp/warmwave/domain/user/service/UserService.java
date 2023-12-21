@@ -52,14 +52,12 @@ public class UserService {
     public static final String DEFAULT_PROFILE_IMG_INDI = "/static/profile/default_indi.jpg";
 
     // 이메일 중복여부 확인
-    @Transactional
     public boolean checkUserDuplicate(String email) {
         boolean duplicateEmail = userRepository.existsByEmail(email);
         return !duplicateEmail; // userEmail이 중복이면 true, 중복이 아닌 경우 false
     }
 
     // 개인회원 닉네임 중복여부 확인
-    @Transactional
     public boolean checkNicknameDuplicate(String nickname) {
         boolean duplicateNickname = individualRepository.existsByNickname(nickname);
         return !duplicateNickname; // nickname이 중복이면 true, 중복이 아닌 경우 false
