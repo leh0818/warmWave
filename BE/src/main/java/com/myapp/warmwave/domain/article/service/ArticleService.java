@@ -111,10 +111,6 @@ public class ArticleService {
     @Transactional
     public Article updateArticleStatus(Long articleId, String userEmail, String articleStatus) {
         Article findArticle = getArticleByArticleId(articleId);
-        User user = findArticle.getUser();
-
-        if (!user.getEmail().equals(userEmail))
-            throw new CustomException(USER_ROLE_NOT_EXIST);
 
         findArticle.setArticleStatusByString(articleStatus);
 

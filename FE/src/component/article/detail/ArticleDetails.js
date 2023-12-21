@@ -27,9 +27,7 @@ const ArticleDetails = () => {
       });
   }, [params.articleId]);
 
-  const handleToggleImages = () => {
-    setShowImages(!showImages);
-  };
+  
 
   const formattedDate = article?.createdAt
     ? new Date(article.createdAt)
@@ -74,9 +72,6 @@ const ArticleDetails = () => {
   };
 
   const handleDelete = async () => {
-    const userToken = Cookies.get("user");
-    const parsedToken = userToken ? JSON.parse(decodeURIComponent(userToken)) : null;
-
     try {
       await jwtAxios.delete(`${API_SERVER_HOST}/api/articles/${params.articleId}`);
 
@@ -96,12 +91,15 @@ const ArticleDetails = () => {
   const articleWriterId = article?.userId;
 
   const showEditButtons = loggedInUserId && loggedInUserId === articleWriterId;
+
   const handleChatButtonClick = () => {
     // 채팅방 데이터 정의
     const chatRoomData = {
       articleId: article.articleId,
       otherId: article.userId,
     };
+
+    jwtAxios.put(`${API_SERVER_HOST}/api/articles/status/${params.articleId}?articleStatus=진행중`);
 
     // 채팅방 생성을 위한 POST 요청 보내기
     jwtAxios
@@ -117,8 +115,47 @@ const ArticleDetails = () => {
       });
   };
 
+  const StatusBox = ({ status }) => {
+    const getStatusStyle = (status) => {
+      switch (status) {
+        case '진행중':
+          return { backgroundColor: '#cd5c5c', color: '#ffffff' };
+        case '기본':
+          return { backgroundColor: '#cd5c5c', color: '#ffffff' };
+        case '완료':
+          return { backgroundColor: '#cd5c5c', color: '#ffffff' };
+        default:
+          return { backgroundColor: '#cd5c5c', color: '#ffffff' };
+      }
+    };
+
+    const getStatusText = (status) => {
+      switch (status) {
+        case '진행중':
+          return '기부진행';
+        case '기본':
+          return '기부대기';
+        case '완료':
+          return '기부완료';
+        default:
+          return status;
+      }
+    };
+
+    const statusStyle = getStatusStyle(status);
+    const statusText = getStatusText(status);
+
+    return (
+      <div className="badge position-absolute" style={{ top: '0.3rem', left: '0.3rem', padding: '0.5rem', ...statusStyle }}>
+          {statusText}
+      </div>
+    );
+
+  };
+
+
   return (
-    <section className="py-5">
+    <section className="py-5" style={{ marginTop: '30px' }}>
       <div className="container px-4 px-lg-5 my-5">
         <div className="row gx-4 gx-lg-5 align-items-start">
 
@@ -170,6 +207,7 @@ const ArticleDetails = () => {
           <div className="col-md-6">
             <div className="d-flex align-items-start mb-1" style={{ flexDirection: "column" }}>
               <div className="d-flex align-items-center">
+                <StatusBox status={article?.articleStatus || '기본'} />
                 {renderBadges()}
                 <h1 className="fw-bolder display-5 ms-0.5 text-left" style={{ fontSize: "2rem" }}>
                   {article?.title || "로딩 중..."}
@@ -204,7 +242,6 @@ const ArticleDetails = () => {
 
               <div>
                 <span className="me-3" style={{ fontSize: "19px", color: "#212529" }}>
-                  조회수👀 : 100
                 </span>
                 <span style={{ fontSize: "19px", color: "#212529" }}>게시날짜 : {formattedDate}</span>
               </div>
