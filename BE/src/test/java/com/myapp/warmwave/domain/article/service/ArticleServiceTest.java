@@ -140,7 +140,7 @@ class ArticleServiceTest {
 
     @DisplayName("기부글 정보 수정 기능 확인")
     @Test
-    void updateArticle() throws IOException {
+    void updateArticle() throws Exception {
         // given
         HttpServletRequest httpServletRequest = new MockHttpServletRequest();
         ArticlePostDto reqDto = saveArticle();

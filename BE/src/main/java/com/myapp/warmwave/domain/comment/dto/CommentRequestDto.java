@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CommentRequestDto {
     @NotNull
-    @Size(min = 10, max = 500, message = "댓글은 10자 이상 1000자 이하로 입력해야 합니다.")
+    @Size(min = 1, max = 500, message = "댓글은 1000자 이하로 입력해야 합니다.")
     private String contents;
 }

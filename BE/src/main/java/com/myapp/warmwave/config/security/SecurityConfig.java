@@ -21,47 +21,48 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final CorsConfig corsConfig;
-    private final JwtAuthFilter jwtAuthFilter;
-    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
-    private final CustomOAuth2UserService customOAuth2UserService;
+        private final CorsConfig corsConfig;
+        private final JwtAuthFilter jwtAuthFilter;
+        private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+        private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+        private final CustomOAuth2UserService customOAuth2UserService;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(STATELESS)
-                )
-                .logout(
-                        logout -> logout
-                                .logoutUrl("/api/users/logout")
-                )
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        authorizeHttpRequests -> authorizeHttpRequests
-                                .requestMatchers(
-                                        "/", "/api/users/login", "/api/users/register/**",
-                                        "/api/articles/today", "/api/main/count", "/api/users/confirm-email",
-                                        "/ws/**"
-                                ).permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/articles/**", "/api/communities/**").permitAll()
-                                .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(
-                        oauth2 -> oauth2
-                                .loginPage("http://localhost:3000/user/login")
-                                .successHandler(oAuth2LoginSuccessHandler)
-                                .failureHandler(oAuth2LoginFailureHandler)
-                                .userInfoEndpoint(userInfo -> userInfo
-                                        .userService(customOAuth2UserService)
-                                )
-                );
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
+                                .httpBasic(AbstractHttpConfigurer::disable)
+                                .formLogin(AbstractHttpConfigurer::disable)
+                                .sessionManagement(
+                                                sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
+                                .logout(
+                                                logout -> logout
+                                                                .logoutUrl("/api/users/logout"))
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .authorizeHttpRequests(
+                                                authorizeHttpRequests -> authorizeHttpRequests
+                                                                .requestMatchers(
+                                                                                "/", "/api/users/login",
+                                                                                "/api/users/register/**",
+                                                                                "/api/articles/today",
+                                                                                "/api/main/count",
+                                                                                "/api/users/confirm-email",
+                                                                                "/ws/**", "/app/**", "/topic/**",
+                                                                                "/api/user/refresh")
+                                                                .permitAll()
+                                                                .requestMatchers(HttpMethod.GET, "/api/articles/**",
+                                                                                "/api/communities/**")
+                                                                .permitAll()
+                                                                .anyRequest().authenticated())
+                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                                .oauth2Login(
+                                                oauth2 -> oauth2
+                                                                .loginPage("http://localhost:3000/user/login")
+                                                                .successHandler(oAuth2LoginSuccessHandler)
+                                                                .failureHandler(oAuth2LoginFailureHandler)
+                                                                .userInfoEndpoint(userInfo -> userInfo
+                                                                                .userService(customOAuth2UserService)));
 
-        return http.build();
-    }
+                return http.build();
+        }
 }
