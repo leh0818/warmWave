@@ -16,7 +16,6 @@ function Comment({ communityId }) {
   const [editedContent, setEditedContent] = useState("");
 
   const loggedInUserId = getCookie('user')?.id;
-  console.log("login User :" + loggedInUserId); // 1
 
   // 날짜 포맷팅 함수
   const formatCreatedAt = (createdAt) => {
