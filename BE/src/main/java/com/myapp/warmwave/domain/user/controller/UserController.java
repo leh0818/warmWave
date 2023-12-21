@@ -24,14 +24,14 @@ public class UserController {
 
     // 이메일 중복여부 확인
     @GetMapping("/register/checkEmail")
-    public ResponseEntity<Boolean> checkUserDuplicate (@RequestParam String email){
+    public ResponseEntity<Boolean> checkUserDuplicate(@RequestParam String email) {
 
         return ResponseEntity.ok(userService.checkUserDuplicate(email));
     }
 
     // 닉네임 중복여부 확인
     @GetMapping("/register/checkNickname")
-    public ResponseEntity<Boolean> checkNicknameDuplicate (@RequestParam String nickname){
+    public ResponseEntity<Boolean> checkNicknameDuplicate(@RequestParam String nickname) {
 
         return ResponseEntity.ok(userService.checkNicknameDuplicate(nickname));
     }
@@ -110,10 +110,9 @@ public class UserController {
             @PathVariable("userId") Long userId,
             @RequestBody RequestInstitutionUpdateDto dto
     ) {
-        if(dto.getPassword() != null) {
-            return ResponseEntity.ok(userService.updatePassword(dto.getPassword(), userId));
-        }
-        return ResponseEntity.ok(userService.updateInstInfo(dto, userId));
+        return dto.getPassword() != null
+                ? ResponseEntity.ok(userService.updatePassword(dto.getPassword(), userId))
+                : ResponseEntity.ok(userService.updateInstInfo(dto, userId));
     }
 
     // 개인 회원 정보 수정
@@ -122,10 +121,9 @@ public class UserController {
             @PathVariable("userId") Long userId,
             @RequestBody RequestIndividualUpdateDto dto
     ) {
-        if(dto.getPassword() != null) {
-            return ResponseEntity.ok(userService.updatePassword(dto.getPassword(), userId));
-        }
-        return ResponseEntity.ok(userService.updateIndiInfo(dto, userId));
+        return dto.getPassword() != null
+                ? ResponseEntity.ok(userService.updatePassword(dto.getPassword(), userId))
+                : ResponseEntity.ok(userService.updateIndiInfo(dto, userId));
     }
 
     // 기관 가입 승인
