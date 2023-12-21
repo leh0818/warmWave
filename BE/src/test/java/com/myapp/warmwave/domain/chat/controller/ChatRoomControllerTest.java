@@ -1,6 +1,7 @@
 package com.myapp.warmwave.domain.chat.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myapp.warmwave.WithMockCustomUser;
 import com.myapp.warmwave.common.jwt.JwtAuthFilter;
 import com.myapp.warmwave.config.security.SecurityConfig;
 import com.myapp.warmwave.domain.chat.dto.ChatRoomDto;
@@ -45,6 +46,7 @@ class ChatRoomControllerTest {
 
     @DisplayName("채팅방 생성 확인")
     @Test
+    @WithMockCustomUser
     void createChatroom() throws Exception {
         // given
         ChatRoomDto reqDto = new ChatRoomDto(1L, 1L);
@@ -53,7 +55,7 @@ class ChatRoomControllerTest {
         );
 
         // when
-        when(chatRoomService.createChatRoom(any(),1L)).thenReturn(resDto);
+        when(chatRoomService.createChatRoom(any(), any())).thenReturn(resDto);
 
         // then
         mockMvc.perform(post("/api/chatRoom")
@@ -63,7 +65,7 @@ class ChatRoomControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andDo(document("chat/채팅방 생성"));
+                .andDo(document("chat/채팅방_생성"));
     }
 
     @DisplayName("채팅방 목록 조회 확인")
@@ -71,7 +73,7 @@ class ChatRoomControllerTest {
     void readAllChatroom() throws Exception {
         // given
         ResponseChatRoomDto resDto = new ResponseChatRoomDto(
-                1L, "기부자1", "수여자1", "제목", "상태", "메시지", null
+                1L, "기부자1", "수여자1", "제목", "상태", "메시지", null, 1L
         );
 
         List<ResponseChatRoomDto> chatRoomDtoList = List.of(resDto);
@@ -86,7 +88,7 @@ class ChatRoomControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andDo(document("chat/채팅방 목록 조회"));
+                .andDo(document("chat/채팅방_목록_조회"));
     }
 
     @DisplayName("채팅방 삭제 확인")
@@ -104,6 +106,6 @@ class ChatRoomControllerTest {
                         .with(csrf()))
                 .andExpect(status().isNoContent())
                 .andDo(print())
-                .andDo(document("chat/채팅방 삭제"));
+                .andDo(document("chat/채팅방_삭제"));
     }
 }
