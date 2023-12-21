@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import jwtAxios from '../util/jwtUtil';
+import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { getCookie } from '../util/cookieUtil';
 import { API_SERVER_HOST } from "../util/jwtUtil"
@@ -32,7 +33,7 @@ function Comment({ communityId }) {
     console.log("fetch Comments Page : " + page);
     try {
 
-      const response = await jwtAxios.get(`${API_SERVER_HOST}/api/communities/${communityId}/comments?page=${page}&size=${limit}`);
+      const response = await axios.get(`${API_SERVER_HOST}/api/communities/${communityId}/comments?page=${page}&size=${limit}`);
       console.log('Server response:', response);
 
       // setComments(prev => [...prev, ...response.data.content]);
@@ -62,7 +63,7 @@ function Comment({ communityId }) {
       alert("댓글을 입력해주세요.");
       return;
     }
-    if(!(newComment.length >= 5 && newComment.length <=1000)){
+    if (newComment.length > 1000) {
       alert('댓글을 10글자 이상 1000글자 이하로 입력해주세요.');
       return;
     }
@@ -76,7 +77,8 @@ function Comment({ communityId }) {
       console.log('Server response:', response);
       const data = response.data;
 
-      setComments(prevComments => [...prevComments, data]);
+      setComments(prevComments => [data, ...prevComments]);
+      
 
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -203,53 +205,52 @@ function Comment({ communityId }) {
         hasMore={hasMore}
         loader={loading && <h4>Loading...</h4>}
         endMessage={
-          !hasMore && (
+          !hasMore && comments.length > 0 && (
             <p style={{ textAlign: 'center' }}>
               <b>마지막 댓글</b>
             </p>
           )
         }
       >
-        {comments.length === 0 && !loading ? (
+        {!loading && comments.length === 0 && (
           <p>댓글 없음</p>
-        ) : (
-          comments.map((comment, index) => (
-            <div className="comment-container" key={index} style={{ marginBottom: '15px' }}>
-              {/* 여기 className 적용하면 작성자, 내용 다른 줄 됨 */}
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                <p style={{ fontWeight: 'bold', margin: '0', marginRight: '10px', color: 'black' }}>{comment.writer}</p>
-                {editingCommentId === comment.id ? (
-                  <input
-                    type="text"
-                    value={editedContent}
-                    onChange={(e) => setEditedContent(e.target.value)}
-                    style={{ flex: 1, border: '1px solid #E2E2E2', outline: 'none' }}
-                  />
-                ) : (
-                  <p style={{ fontSize: '0.8rem', color: 'grey', margin: '0' }}>
-                    {formatCreatedAt(comment.createdAt)}
-                  </p>)}
-              </div>
-              <div className="date-and-buttons">
-                <p style={{ margin: '0', color: 'black' }}>{comment.contents}</p>
-                {loggedInUserId === comment.userId && (
-                  <div className="comment-buttons">
-                    {editingCommentId === comment.id ? (
-                      <>
-                        <button className="btn " onClick={() => setEditingCommentId(null)} style={{ backgroundColor: '#FFFFFF', borderColor: '#999999', color: "#999999", marginRight: '10px' }}>취소</button>
-                        <button className="btn " onClick={() => handleUpdate(comment.communityId, comment.id)} style={{ backgroundColor: '#FFFFFF', borderColor: '#999999', color: "#999999" }}>저장</button>
-                      </>) : (
-                      <>
-                        <button className="btn " onClick={() => handleEditClick(comment)} style={{ backgroundColor: '#FFFFFF', borderColor: '#999999', color: "#999999", marginRight: '10px' }}>수정</button>
-                        <button className="btn " onClick={() => handleDelete(comment.communityId, comment.id)} style={{ backgroundColor: '#FFFFFF', borderColor: '#999999', color: "#999999" }}>삭제</button>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))
         )}
+        {comments.map((comment, index) => (
+          <div className="comment-container" key={index} style={{ marginBottom: '15px' }}>
+            {/* 여기 className 적용하면 작성자, 내용 다른 줄 됨 */}
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+              <p style={{ fontWeight: 'bold', margin: '0', marginRight: '10px', color: 'black' }}>{comment.writer}</p>
+              {editingCommentId === comment.id ? (
+                <input
+                  type="text"
+                  value={editedContent}
+                  onChange={(e) => setEditedContent(e.target.value)}
+                  style={{ flex: 1, border: '1px solid #E2E2E2', outline: 'none' }}
+                />
+              ) : (
+                <p style={{ fontSize: '0.8rem', color: 'grey', margin: '0' }}>
+                  {formatCreatedAt(comment.createdAt)}
+                </p>)}
+            </div>
+            <div className="date-and-buttons">
+              <p style={{ margin: '0', color: 'black' }}>{comment.contents}</p>
+              {loggedInUserId === comment.userId && (
+                <div className="comment-buttons">
+                  {editingCommentId === comment.id ? (
+                    <>
+                      <button className="btn " onClick={() => setEditingCommentId(null)} style={{ backgroundColor: '#FFFFFF', borderColor: '#999999', color: "#999999", marginRight: '10px' }}>취소</button>
+                      <button className="btn " onClick={() => handleUpdate(comment.communityId, comment.id)} style={{ backgroundColor: '#FFFFFF', borderColor: '#999999', color: "#999999" }}>저장</button>
+                    </>) : (
+                    <>
+                      <button className="btn " onClick={() => handleEditClick(comment)} style={{ backgroundColor: '#FFFFFF', borderColor: '#999999', color: "#999999", marginRight: '10px' }}>수정</button>
+                      <button className="btn " onClick={() => handleDelete(comment.communityId, comment.id)} style={{ backgroundColor: '#FFFFFF', borderColor: '#999999', color: "#999999" }}>삭제</button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </InfiniteScroll>
     </div>
   );
