@@ -225,13 +225,19 @@ public class UserService {
                 .map(Institution.class::cast)
                 .orElseThrow(() -> new IllegalArgumentException("에러"));
 
-        Address address = addressService.updateInstitutionAddress(dto, savedInstitution);
+        String encodedPassword = dto.getPassword() == null
+                //dto의 비밀번호가 null일 때 기존 비밀번호를 사용
+                ? savedInstitution.getPassword()
+                //dto의 비밀번호가 입력되었을 때에만 dto 데이터 사용
+                : passwordEncoder.encode(dto.getPassword());
 
-        if (dto.getPassword() == null) {
-            savedInstitution.updateUserInfo(savedInstitution.getPassword(), address);
-        }
+        Address address = dto.getFullAddr() == null
+                //dto의 주소 정보가 null일 때 기존 주소 사용
+                ? savedInstitution.getAddress()
+                //dto의 주소 정보가 입력되었을 때에만 dto 테이터 사용
+                : addressService.updateInstitutionAddress(dto, savedInstitution);
 
-        savedInstitution.updateUserInfo(passwordEncoder.encode(dto.getPassword()), address);
+        savedInstitution.updateUserInfo(encodedPassword, address);
 
         return userRepository.save(savedInstitution).getId();
     }
@@ -239,20 +245,31 @@ public class UserService {
     // 개인 회원 정보 수정
     @Transactional
     public Long updateIndiInfo(RequestIndividualUpdateDto dto, Long userId) {
-
         checkNicknameDuplicate(dto.getNickname());
 
         Individual savedIndividual = userRepository.findById(userId)
                 .map(Individual.class::cast)
                 .orElseThrow(() -> new IllegalArgumentException("에러"));
 
-        Address address = addressService.updateIndividualAddress(dto, savedIndividual);
+        String nickname = dto.getNickname() == null
+                //dto의 닉네임이 null이 아닐 때 기존 닉네임 사용
+                ? savedIndividual.getName()
+                //dto의 닉네임이 입력되었을 때에만 dto 데이터 사용
+                : dto.getNickname();
 
-        if (dto.getPassword() == null) {
-            savedIndividual.updateIndiInfo(dto.getNickname(), savedIndividual.getPassword(), address);
-        }
+        String encodedPassword = dto.getPassword() == null
+                //dto의 비밀번호가 null일 때 기존 비밀번호를 사용
+                ? savedIndividual.getPassword()
+                //dto의 비밀번호가 입력되었을 때에만 dto 데이터 사용
+                : passwordEncoder.encode(dto.getPassword());
 
-        savedIndividual.updateIndiInfo(dto.getNickname(), passwordEncoder.encode(dto.getPassword()), address);
+        Address address = dto.getFullAddr() == null
+                //dto의 주소 정보가 null일 때 기존 주소 사용
+                ? savedIndividual.getAddress()
+                //dto의 주소 정보가 입력되었을 때에만 dto 테이터 사용
+                : addressService.updateIndividualAddress(dto, savedIndividual);
+
+        savedIndividual.updateIndiInfo(nickname, encodedPassword, address);
 
         return userRepository.save(savedIndividual).getId();
     }
