@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import jwtAxios, { API_SERVER_HOST } from '../../util/jwtUtil.js';
 import DaumPost from '../daumPost.js';
 import ChangePasswordModal from './passwordModal/changePasswordModal.js';
+import useToast from '../../hooks/useToast.js';
 
 function EditIndivInfo(props) {
   const userInfo = props.userInfo;
   const { userId, userType, name, email, address } = userInfo;
   const [changeModalShow, setChangeModalShow] = useState(false);
   const [editData, setEditData] = useState({});
+  const { showToast } = useToast();
 
   const handleChangeModalShow = () => {
     setChangeModalShow(true);
@@ -18,16 +20,13 @@ function EditIndivInfo(props) {
 
     jwtAxios.put(`${API_SERVER_HOST}/api/users/${userId}/${userType}`, editData)
       .then(res => {
-        const resData = res.data;
+        showToast('정보가 수정되었습니다.', 'success');
+        goToInfoPage();
       })
       .catch(err => {
 
       });
   }
-
-  useEffect(() => {
-
-  }, [])
 
   const handleSubmitKakaoPost = (address) => {
     const sidoAddress = address.provinceAddress;

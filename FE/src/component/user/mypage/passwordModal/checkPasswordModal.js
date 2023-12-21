@@ -3,9 +3,10 @@ import Modal from 'react-bootstrap/Modal';
 import { getCookie } from "../../../util/cookieUtil";
 import axios from "axios";
 import { API_SERVER_HOST } from "../../../util/jwtUtil";
+import useToast from '../../../hooks/useToast'
 
 function CheckPasswordModal(props) {
-  // const userInfo = props.userInfo;
+  const { showToast } = useToast()
   const { email } = getCookie('user');
 
   const handleClose = () => props.setShow(false);
@@ -18,18 +19,16 @@ function CheckPasswordModal(props) {
     axios.post(`${API_SERVER_HOST}/api/users/login`, loginData)
       .then(res => {
         if (res.status === 200) {
-          //TODO: toast 성공 메시지 출력
+          showToast('비민번호 인증에 성공하였습니다.', 'success')
           props.setShow(false);
           props.passwordCheckResult(true);
         }
-
       })
       .catch((err) => {
         const res = err.response;
 
         if (res.status === 400) {
-          alert(res.data.msg);
-          //toast 에러 메시지 출력
+          showToast('비밀번호가 일치하지 않습니다.', 'error')
         }
       });
 
