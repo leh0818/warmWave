@@ -3,6 +3,7 @@ package com.myapp.warmwave.domain.article.repository;
 import com.myapp.warmwave.common.main.dto.MainArticleDto;
 import com.myapp.warmwave.domain.article.entity.Article;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
             "WHERE DATE(a.createdAt) = CURRENT_DATE " +
             "ORDER BY a.createdAt DESC")
     Page<MainArticleDto> findTop5OrderByCreatedAtDesc(Pageable pageable);
+
+    Page<Article> findByUserId(Long userId, PageRequest pageRequest);
 }
