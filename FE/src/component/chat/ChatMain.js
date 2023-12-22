@@ -147,7 +147,8 @@ function ChatMain() {
     <div>
       <div
         style={{
-          height: "650px",
+          marginTop: "60px",
+          height: "500px",
           position: "relative",
         }}
       >
