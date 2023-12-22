@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import {Link} from "react-router-dom";
 import styled from 'styled-components';
 import useCustomLogin from "../../hooks/useCustomLogin"
-// import KakaoLogin from "./KakaoLogin"
 import useToast from "../../hooks/useToast";
 // nodejs library that concatenates classes
 import classnames from "classnames";
 import { ReactComponent as Google } from "../../../assets/images/social/google.svg"
 import Kakao from "../../../assets/images/social/kakao.png"
 import Naver from "../../../assets/images/social/naver.png"
+import {API_SERVER_HOST} from "../../util/jwtUtil"
 
 // reactstrap components
 import {
@@ -51,7 +51,7 @@ function Login() {
                 console.log(data)
 
                 if (data.error) {
-                    showToast("이메일과 패스워드를 다시 확인하세요", 'warning')
+                    showToast("로그인에 실패했습니다. 비밀번호 또는 이메일 링크인증을 확인해주세요.", 'error')
                 }
                 else {
                     showToast("로그인 성공", 'success')
@@ -59,7 +59,6 @@ function Login() {
                 }
             })
     }
-
 
     return (
         <div>
@@ -84,7 +83,7 @@ function Login() {
                                             <small>SNS 로그인</small>
                                             <SSocialBox>
                                                 <NaverImg/>
-                                                <KakaoImg/>
+                                                <Link to={`${API_SERVER_HOST}/oauth2/authorization/kakao`}><KakaoImg /></Link>
                                                 <GoogleSVG
                                                     viewBox="4 4 38 38"
                                                 />
