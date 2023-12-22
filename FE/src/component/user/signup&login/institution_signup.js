@@ -170,12 +170,20 @@ const Institution_signup = () => {
             showToast('이메일 중복체크를 해주세요.', 'error');
             return;
         }
+        if (!institutionName) {
+            showToast('기관명을 입력해주세요.','error');
+            return;
+        }
         if (!registerNumValid) {
             showToast('사업자등록번호를 확인해주세요.', 'error');
             return;
         }
         if (!uploadRef.current?.files[0]) {
             showToast('사업자등록증 이미지를 업로드해주세요.', 'error');
+            return;
+        }
+        if (!address1 || !address2 || !address3) {
+            showToast('주소를 등록해주세요', 'warning');
             return;
         }
         if (!getValues('agreeTerms')) {
