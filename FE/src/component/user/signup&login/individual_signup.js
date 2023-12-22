@@ -160,6 +160,14 @@ const Individual_signup = () => {
             showToast('이메일 중복체크를 해주세요.', 'error');
             return;
         }
+        if (!nicknameValid) {
+            showToast('닉네임 중복체크를 해주세요.', 'error');
+            return;
+        }
+        if (!address1 && !address2 && !address3) {
+            showToast('주소를 등록해주세요', 'warning');
+            return;
+        }
         if (!getValues('agreeTerms')) {
             showToast('서비스 이용약관에 동의해주세요.', 'error');
             return;

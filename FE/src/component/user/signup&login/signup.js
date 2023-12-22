@@ -3,6 +3,7 @@ import {Link, useNavigate} from 'react-router-dom';
 import styled from 'styled-components';
 import Logo from './logo.png';
 import { ReactComponent as Google } from "../../../assets/images/social/google.svg"
+import {API_SERVER_HOST} from "../../util/jwtUtil"
 import Kakao from "../../../assets/images/social/kakao.png"
 import Naver from "../../../assets/images/social/naver.png"
 
@@ -65,11 +66,6 @@ const Signup = () => {
         navigate("/signup/institution");
     };
 
-    // Todo 카카오 소셜로그인 구현 후 연결
-    // const handleKakaoButtonClick = () => {
-    //     window.location.href =
-    // }
-
     return (
         <StLayout>
             <StContainer>
@@ -96,7 +92,7 @@ const Signup = () => {
         <SH3>SNS로 간편하게 시작하기</SH3>
         <SSocialBox>
             <NaverImg/>
-            <KakaoImg/>
+            <Link to={`${API_SERVER_HOST}/oauth2/authorization/kakao`}><KakaoImg /></Link>
             <GoogleSVG
                 viewBox="4 4 38 38"
             />
