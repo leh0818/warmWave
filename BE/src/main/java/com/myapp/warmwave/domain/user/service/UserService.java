@@ -57,14 +57,12 @@ public class UserService {
     public static final String DEFAULT_PROFILE_IMG_INDI = "/static/profile/default_indi.jpg";
 
     // 이메일 중복여부 확인
-    @Transactional
     public boolean checkUserDuplicate(String email) {
         boolean duplicateEmail = userRepository.existsByEmail(email);
         return !duplicateEmail; // userEmail이 중복이면 true, 중복이 아닌 경우 false
     }
 
     // 개인회원 닉네임 중복여부 확인
-    @Transactional
     public boolean checkNicknameDuplicate(String nickname) {
         boolean duplicateNickname = individualRepository.existsByNickname(nickname);
         return !duplicateNickname; // nickname이 중복이면 true, 중복이 아닌 경우 false
@@ -168,10 +166,9 @@ public class UserService {
         Map<String, Object> cookieMap = new HashMap<>();
         cookieMap.put(ACCESS_TOKEN, accessToken);
         cookieMap.put(REFRESH_TOKEN, refreshToken);
-        long expiration = (60 * 60 * 24 * 7);
 
-        cookieManager.setCookie(response, cookieMap.get(ACCESS_TOKEN).toString(), ACCESS_TOKEN, expiration);
-        cookieManager.setCookie(response, cookieMap.get(REFRESH_TOKEN).toString(), REFRESH_TOKEN, expiration);
+        cookieManager.setCookie(response, cookieMap.get(ACCESS_TOKEN).toString(), ACCESS_TOKEN, jwtProvider.getAccessTokenExpirationPeriod());
+        cookieManager.setCookie(response, cookieMap.get(REFRESH_TOKEN).toString(), REFRESH_TOKEN, jwtProvider.getRefreshTokenExpirationPeriod());
 
         return new ResponseUserLoginDto(user.getId(), user.getEmail(), user.getName());
     }
@@ -239,9 +236,19 @@ public class UserService {
                 .map(Institution.class::cast)
                 .orElseThrow(() -> new IllegalArgumentException("에러"));
 
-        Address address = addressService.updateInstitutionAddress(dto, savedInstitution);
+        String encodedPassword = dto.getPassword() == null
+                //dto의 비밀번호가 null일 때 기존 비밀번호를 사용
+                ? savedInstitution.getPassword()
+                //dto의 비밀번호가 입력되었을 때에만 dto 데이터 사용
+                : passwordEncoder.encode(dto.getPassword());
 
-        savedInstitution.updateUserInfo(passwordEncoder.encode(dto.getPassword()), address);
+        Address address = dto.getFullAddr() == null
+                //dto의 주소 정보가 null일 때 기존 주소 사용
+                ? savedInstitution.getAddress()
+                //dto의 주소 정보가 입력되었을 때에만 dto 테이터 사용
+                : addressService.updateInstitutionAddress(dto, savedInstitution);
+
+        savedInstitution.updateUserInfo(encodedPassword, address);
 
         return userRepository.save(savedInstitution).getId();
     }
@@ -249,18 +256,44 @@ public class UserService {
     // 개인 회원 정보 수정
     @Transactional
     public Long updateIndiInfo(RequestIndividualUpdateDto dto, Long userId) {
-
         checkNicknameDuplicate(dto.getNickname());
 
         Individual savedIndividual = userRepository.findById(userId)
                 .map(Individual.class::cast)
                 .orElseThrow(() -> new IllegalArgumentException("에러"));
 
-        Address address = addressService.updateIndividualAddress(dto, savedIndividual);
+        String nickname = dto.getNickname() == null
+                //dto의 닉네임이 null이 아닐 때 기존 닉네임 사용
+                ? savedIndividual.getName()
+                //dto의 닉네임이 입력되었을 때에만 dto 데이터 사용
+                : dto.getNickname();
 
-        savedIndividual.updateIndiInfo(dto.getNickname(), passwordEncoder.encode(dto.getPassword()), address);
+        String encodedPassword = dto.getPassword() == null
+                //dto의 비밀번호가 null일 때 기존 비밀번호를 사용
+                ? savedIndividual.getPassword()
+                //dto의 비밀번호가 입력되었을 때에만 dto 데이터 사용
+                : passwordEncoder.encode(dto.getPassword());
+
+        Address address = dto.getFullAddr() == null
+                //dto의 주소 정보가 null일 때 기존 주소 사용
+                ? savedIndividual.getAddress()
+                //dto의 주소 정보가 입력되었을 때에만 dto 테이터 사용
+                : addressService.updateIndividualAddress(dto, savedIndividual);
+
+        savedIndividual.updateIndiInfo(nickname, encodedPassword, address);
 
         return userRepository.save(savedIndividual).getId();
+    }
+
+    @Transactional
+    public Long updatePassword(String password, Long userId) {
+        User savedUser = userRepository.findById(userId)
+                .map(Individual.class::cast)
+                .orElseThrow(() -> new IllegalArgumentException("에러"));
+
+        savedUser.updateUserInfo(passwordEncoder.encode(password), savedUser.getAddress());
+
+        return userRepository.save(savedUser).getId();
     }
 
     // 기관 가입 승인

@@ -13,23 +13,14 @@ function FavoriteInstList() {
               <tr>
                 <th scope="col" style={{ textAlign: "center" }}>번호</th>
                 <th scope="col" style={{ textAlign: "center" }}>기관이름</th>
-                <td></td>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <th style={{ textAlign: "center", verticalAlign: "middle" }} scope="row">1</th>
-                <td style={{ textAlign: "center", verticalAlign: "middle" }}>멋쟁이사자노인회관</td>
-                <td style={{ textAlign: "center" }}>
-                  <button className='btn btn-danger'>취소</button>
-                </td>
-              </tr>
-              <tr>
-                <th style={{ textAlign: "center", verticalAlign: "middle" }} scope="row">2</th>
-                <td style={{ textAlign: "center", verticalAlign: "middle" }}>멋쟁이사자청소년쉼터</td>
-                <td style={{ textAlign: "center" }}>
-                  <button className='btn btn-danger'>취소</button>
-                </td>
+                <td></td>
+                <td><h1>To be updated...</h1></td>
+                <td></td>
               </tr>
             </tbody>
           </table>

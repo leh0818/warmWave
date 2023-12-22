@@ -1,7 +1,21 @@
-function ShowIndivInfo({ sendDataToParent }) {
-  const goToEditPage = () => {
-    sendDataToParent('edit');
+import { useEffect, useState } from "react";
+import CheckPasswordModal from "./passwordModal/checkPasswordModal";
+
+function ShowIndivInfo(props) {
+  const userInfo = props.userInfo;
+  const { name, email, address } = userInfo;
+  const [checkModalShow, setCheckModalShow] = useState(false);
+  const [isPassed, setIsPassed] = useState(false);
+
+  const handleCheckModalShow = async () => {
+    setCheckModalShow(true);
   }
+
+  useEffect(() => {
+    if (isPassed) {
+      props.sendDataToParent('edit');
+    }
+  }, [isPassed]);
 
   return (
     <div className="col-md-8 mt-5">
@@ -12,7 +26,7 @@ function ShowIndivInfo({ sendDataToParent }) {
               <h6 className="mb-0">닉네임</h6>
             </div>
             <div className="col-sm-9 text-secondary">
-              Kenneth Valdez
+              {name}
             </div>
           </div>
           <hr />
@@ -21,7 +35,7 @@ function ShowIndivInfo({ sendDataToParent }) {
               <h6 className="mb-0">이메일</h6>
             </div>
             <div className="col-sm-9 text-secondary">
-              fip@jukmuh.al
+              {email}
             </div>
           </div>
           <hr />
@@ -30,17 +44,18 @@ function ShowIndivInfo({ sendDataToParent }) {
               <h6 className="mb-0">주소</h6>
             </div>
             <div className="col-sm-9 text-secondary">
-              Bay Area, San Francisco, CA
+              {address}
             </div>
           </div>
           <hr />
           <div className="row">
             <div className="col-sm-12">
-              <a className="btn btn-info" onClick={goToEditPage}>정보수정</a>
+              <button className="btn btn-info" onClick={handleCheckModalShow}>정보수정</button>
             </div>
           </div>
         </div>
       </div>
+      <CheckPasswordModal userInfo={userInfo} show={checkModalShow} setShow={setCheckModalShow} passwordCheckResult={setIsPassed} />
     </div>
   )
 }

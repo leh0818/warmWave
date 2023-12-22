@@ -12,9 +12,9 @@ import com.myapp.warmwave.domain.article.repository.ArticleCategoryRepository;
 import com.myapp.warmwave.domain.article.repository.ArticleRepository;
 import com.myapp.warmwave.domain.category.entity.Category;
 import com.myapp.warmwave.domain.category.service.CategoryService;
+import com.myapp.warmwave.domain.image.entity.Image;
 import com.myapp.warmwave.domain.image.service.ImageService;
 import com.myapp.warmwave.domain.user.entity.User;
-import com.myapp.warmwave.domain.image.entity.Image;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -131,7 +131,16 @@ public class ArticleService {
                 .toList();
 
         return new PageImpl<>(articleResponseDtoList);
+    }
 
+    public Page<ArticleResponseDto> getUserAllArticles(Long userId, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
+        List<ArticleResponseDto> articleResponseDtoList
+                = articleRepository.findByUserId(userId, pageRequest)
+                .stream()
+                .map(articleMapper::articleToArticleResponseDto)
+                .toList();
+        return new PageImpl<>(articleResponseDtoList);
     }
 
     @Transactional
@@ -147,7 +156,7 @@ public class ArticleService {
         articleCategoryRepository.deleteByArticleId(articleId);
         articleRepository.deleteById(articleId);
 
-        if(articleRepository.existsById(articleId)) {
+        if (articleRepository.existsById(articleId)) {
             throw new CustomException(FAILED_TO_REMOVE);
         }
     }

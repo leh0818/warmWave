@@ -105,6 +105,13 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.getAllArticles(page, size));
     }
 
+    @GetMapping("/{userId}/all")
+    public ResponseEntity<Page<ArticleResponseDto>> getUsersAllArticles(@PathVariable("userId") Long userId,
+                                                                        @Positive @RequestParam("page") Integer page,
+                                                                        @Positive @RequestParam("size") Integer size) {
+        return ResponseEntity.ok(articleService.getUserAllArticles(userId, page, size));
+    }
+
     @DeleteMapping("/{articleId}")
     public ResponseEntity deleteArticle(@AuthenticationPrincipal UserDetails userDetails,
                                         @PathVariable("articleId") Long articleId) {
